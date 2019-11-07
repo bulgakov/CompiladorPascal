@@ -1,0 +1,193 @@
+package compiladorpascal;
+import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
+import ast.*;
+import table.ErrorMsg;
+
+/* Inicializacion  */
+parser code {: 
+    private List<ErrorMsg> errors = new ArrayList<ErrorMsg>();
+
+    public void report_error(String message, Object info) {       
+        /* Alt error print */
+        /*
+        System.err.print(message);
+        System.err.flush();
+        if (info instanceof Symbol)
+	    if (((Symbol)info).left != -1)
+	        System.err.println(" at line " + ((Symbol)info).left +
+                                   " of input");
+	    else System.err.println("");
+        else System.err.println("");
+        */
+        /*
+        System.out.println(message+" at");
+        if ( info instanceof ComplexSymbolFactory.ComplexSymbol )
+            System.out.println(info);
+        else 
+            System.err.println("Error : " + message);
+        */
+        StringBuilder err = new StringBuilder();
+        err.append(message);
+        err.append(" Expected: ");
+        for (Integer i : expected_token_ids()) { 
+            if (err.length() != 0) 
+                err.append(", ");
+            err.append(symbl_name_from_id(i));
+        }
+        if (info != null && info instanceof ComplexSymbolFactory.ComplexSymbol)
+            errors.add(new ErrorMsg(((ComplexSymbolFactory.ComplexSymbol)info).xleft.getLine(), ((ComplexSymbolFactory.ComplexSymbol)info).xleft.getColumn(), err.toString()));
+        else
+            errors.add(new ErrorMsg(0, 0, err.toString()));
+    }
+    
+    public List<ErrorMsg> getErrors() { 
+        return errors;
+    }
+
+    public boolean error() { 
+        return errors.size() > 0;
+    }
+:};
+
+/* Terminales */
+terminal WRITE
+terminal READ
+
+terminal DOT;
+terminal COMMA;
+terminal SEMICOLON;
+terminal COLON;
+terminal LPAREN;
+terminal RPAREN;
+
+/* procedimientos y funciones */
+terminal PROGRAM;
+terminal PROCEDURE;
+terminal FUNCTION;
+terminal BEGIN;
+terminal END;
+terminal RETURN;
+
+/* secuencias de control e iteradores */
+terminal IF;
+terminal THEN;
+terminal ELSE;
+terminal FOR;
+terminal TO;
+terminal DO;
+terminal WHILE;
+terminal REPEAT;
+terminal UNTIL;
+terminal BREAK;
+terminal CONTINUE;
+terminal EXIT;
+
+/* Operadores */
+terminal ASSIGN;            // :=
+terminal String OPLOG;      // and or
+terminal String OPREL;      // = /= < <= > >=
+terminal String OPSUM;      // + -
+terminal String OPMULT;     //* /
+terminal NOT;               //not
+terminal DIV;               //div
+terminal MOD;               //mod
+
+/* literales */
+terminal CHAR, INTEGER, BOOLEAN;
+terminal NULL;
+terminal FALSE, TRUE;
+terminal String  IDENTIFIER;
+terminal String  STRING_LITERAL;
+terminal Char    CHAR_LITERAL;
+terminal Integer INTEGER_LITERAL;
+
+/* No-Terminales */
+non terminal Program program;
+non terminal Expression opt_expression;
+non terminal Expression expression;
+non terminal Expression relation;
+non terminal Expression simple_expression;
+non terminal Expression term;
+non terminal Expression factor;
+non terminal Expression primary;
+non terminal Expression name;
+non terminal Type type;
+
+/* Precedencia */
+
+/* Gramatica */
+start with program;
+
+program                     ::= PROGRAM:p
+                            {: RESULT = new Program(p, pxleft.getLine(), pxleft.getColumn()); :}
+                            ;
+
+opt_expression              ::= expression:e
+                            {: RESULT = e; :}
+                            |
+                            {: RESULT = null; :}
+                            ;
+
+expression                  ::= relation:r
+                            {: RESULT = r; :}
+                            |   expression:e1 OPLOG:o relation:e2
+                            {: RESULT = new LogicalExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
+                            |   error:e
+                            {: RESULT = new UndefinedExpression(exleft.getLine(), exleft.getColumn()); :}
+                            ;
+
+relation                    ::= simple_expression:e
+                            {: RESULT = e; :}
+                            |   simple_expression:e1 OPREL:o simple_expression:e2
+                            {: RESULT = new AritmeticExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
+                            ;
+
+simple_expression           ::= OPSUM:o term:t
+                            {: RESULT = new UnaryExpression(o, t, oxleft.getLine(), oxleft.getColumn()); :}
+                            |   term:t
+                            {: RESULT = t; :}
+                            |   simple_expression:e1 OPSUM:o term:e2
+                            {: RESULT = new AritmeticExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
+                            ;
+
+term                        ::= factor:f
+                            {: RESULT = f; :}
+                            |   term:e1 OPMULT:o factor:e2
+                            {: RESULT = new AritmeticExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
+                            ;
+
+factor                      ::= primary:p
+                            {: RESULT = p; :}
+                            |   NOT:n primary:p
+                            {: RESULT = new NotExpression(p, nxleft.getLine(), nxleft.getColumn()); :}
+                            ;
+
+primary                     ::= name:n
+                            {: RESULT = n; :}
+                            |   INTEGER_LITERAL:i
+                            {: RESULT = new IntegerLiteral(i.intValue(), ixleft.getLine(), ixleft.getColumn()); :}
+                            |   FLOAT_LITERAL:f
+                            {: RESULT = new FloatLiteral(f.floatValue(), fxleft.getLine(), fxleft.getColumn()); :}
+                            |   LPAREN expression:e RPAREN
+                            {: RESULT = e; :}
+                            |   TRUE:e
+                            {: RESULT = new True(exleft.getLine(), exleft.getColumn()); :}
+                            |   FALSE:e
+                            {: RESULT = new False(exleft.getLine(), exleft.getColumn()); :}
+                            ;
+
+name                        ::= IDENTIFIER:i
+                            {: RESULT = new IdentifierExpression(new Identifier(i, ixleft.getLine(), ixleft.getColumn()), ixleft.getLine(), ixleft.getColumn()); :}
+                            |   IDENTIFIER:i LPAREN parameter_part:p RPAREN
+                            {: RESULT = new CallExpression(new Identifier(i, ixleft.getLine(), ixleft.getColumn()), p, ixleft.getLine(), ixleft.getColumn()); :}
+                            ;
+
+type                        ::= BOOLEAN:t
+                            {: RESULT = new BooleanType(txleft.getLine(), txleft.getColumn()); :}
+                            |   FLOAT:t
+                            {: RESULT = new FloatType(txleft.getLine(), txleft.getColumn()); :}
+                            |   INTEGER:t
+                            {: RESULT = new IntegerType(txleft.getLine(), txleft.getColumn()); :}
+                            ;
