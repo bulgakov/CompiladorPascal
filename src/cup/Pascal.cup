@@ -69,6 +69,9 @@ terminal FUNCTION;
 terminal BEGIN;
 terminal END;
 terminal RETURN;
+terminal TYPE;
+terminal RECORD;
+
 
 /* secuencias de control e iteradores */
 terminal IF;
@@ -84,19 +87,27 @@ terminal BREAK;
 terminal CONTINUE;
 terminal EXIT;
 
+/* Tipos */
+terminal CHAR, INTEGER, BOOLEAN;
+
 /* Operadores */
 terminal ASSIGN;            // :=
-terminal String OPLOG;      // and or
-terminal String OPREL;      // = /= < <= > >=
-terminal String OPSUM;      // + -
-terminal String OPMULT;     //* /
+terminal String EQ;         // =
+terminal String NEQ;        // <>
+terminal String LT;         // <
+terminal String GT;         // >
+terminal String LE;         // <=
+terminal String GE;         // >=
+terminal String PLUS;       // +
+terminal String MINUS;      // -
+terminal String MULT        // *
+terminal String SLASH;      // /
 terminal NOT;               //not
 terminal DIV;               //div
 terminal MOD;               //mod
 
 /* literales */
-terminal CHAR, INTEGER, BOOLEAN;
-terminal NULL;
+terminal NIL;
 terminal FALSE, TRUE;
 terminal String  IDENTIFIER;
 terminal String  STRING_LITERAL;
@@ -104,7 +115,7 @@ terminal Char    CHAR_LITERAL;
 terminal Integer INTEGER_LITERAL;
 
 /* No-Terminales */
-non terminal Program program;
+non terminal Program prog;
 non terminal Expression opt_expression;
 non terminal Expression expression;
 non terminal Expression relation;
@@ -114,14 +125,147 @@ non terminal Expression factor;
 non terminal Expression primary;
 non terminal Expression name;
 non terminal Type type;
+non terminal String OPLOG;      // and or
+non terminal String OPREL;      // = <> < <= > >=
+non terminal String OPSUM;      // + -
+non terminal String OPMULT;     // * / mod div
 
 /* Precedencia */
 
 /* Gramatica */
-start with program;
+start with prog;
 
-program                     ::= PROGRAM:p
+prog                        ::= PROGRAM:p IDENTIFIER parameters:pd block DOT
                             {: RESULT = new Program(p, pxleft.getLine(), pxleft.getColumn()); :}
+                            ;
+
+parameters                  ::= LPAREN identifier_list RPAREN
+                            |   
+                            ;
+
+identifier_list             ::= IDENTIFIER:i
+                            |   IDENTIFIER:i COMMA identifier_list:il
+                            ;
+
+block                       ::= declarations:dl BEGIN:b statements:s END:e
+                            ;
+
+declarations                ::= declaration:d declarations:dl
+                            |   
+                            ;
+
+declaration                 ::= variable_declaration:vl
+                            |   type_declaration:tl
+                            |   procedure_declaration:p
+                            |   function_declaration:f
+                            ;
+
+type_declaration            ::= TYPE:t type_definitions:tl
+                            ;
+
+type_definitions            ::= type_definition:t SEMICOLON:s type_definitions:tl
+                            |   type_definition:t SEMICOLON:s
+                            ;
+
+type_definition             ::= IDENTIFIER:i EQ:e record_type
+                            ;
+
+record_type                 ::= RECORD:r field_list:fl END:e
+                            ;
+
+field_list                  ::= identifier_list:il COLON:c type:t field_list:fl
+                            |   
+                            ;
+
+variable_declaration        ::= VAR variable_definitions:vl
+
+variable_definitions        ::= variable_definition:v SEMICOLON:s
+                            |   variable_definition:v SEMICOLON:s variable_definitions:vl
+                            ;   
+
+variable_definition         ::= identifier_list:il COLON:c type:t
+                            ;
+
+procedure_declaration       ::= PROCEDURE:p IDENTIFIER:i formal_parameters:pl SEMICOLON:s block SEMICOLON:s2
+                            ;
+
+function_declaration        ::= FUNCTION:f  IDENTIFIER:i formal_parameters:pl SEMICOLON:s block SEMICOLON:s2
+                            ;
+
+formal_parameters           ::= LPAREN parameter_defs RPAREN
+                            |
+                            ;
+
+parameter_defs              ::= parameter_def:p parameter_defs:pl
+                            |   parameter_def:p
+                            ;
+
+parameter_def               ::= identifier_list:il COLON:c type_identifier:t
+                            ;
+
+statements                  ::= statement:s statements:sl
+                            |   statement:s
+                            ;
+
+statement                   ::= assign_statement
+                            |   procedure_statement
+                            |   if_statement
+                            |   while_statement
+                            |   repeat_statement
+                            |   for_statement
+                            |   
+                            ;
+
+assign_statement            ::= variable ASSIGN expression
+                            ;
+
+procedure_statement         ::= IDENTIFIER parameter_list
+                            ;
+
+if_statement                ::= IF expression THEN statements else_statement
+                            ;
+
+else_statement              ::= ELSE statements
+                            |   
+                            ;
+
+while_statement             ::= WHILE expression DO statements
+                            ;
+
+repeat_statement            ::= REPEAT statements UNTIL expression
+                            ;
+
+for_statement               ::= FOR IDENTIFIER ASSING expression TO expression DO statements
+                            ;
+
+parameter_list              ::= LPAREN parameters RPAREN
+                            |   
+                            ;
+
+parameters                  ::= expression:e parameters:pl
+                            |   
+                            ;
+
+OPLOG                       ::= AND
+                            |   OR
+                            ;
+
+OPREL                       ::= EQ
+                            |   NEQ
+                            |   LT
+                            |   GT
+                            |   LE
+                            |   GE
+                            ;
+
+OPSUM                       ::= PLUS
+                            |   MINUS
+                            ;
+
+OPMULT                      ::= MULT
+                            |   SLASH
+                            |   DIV
+                            |   MOD
                             ;
 
 opt_expression              ::= expression:e
@@ -186,7 +330,7 @@ name                        ::= IDENTIFIER:i
 
 type                        ::= BOOLEAN:t
                             {: RESULT = new BooleanType(txleft.getLine(), txleft.getColumn()); :}
-                            |   FLOAT:t
+                            |   CHAR:t
                             {: RESULT = new FloatType(txleft.getLine(), txleft.getColumn()); :}
                             |   INTEGER:t
                             {: RESULT = new IntegerType(txleft.getLine(), txleft.getColumn()); :}

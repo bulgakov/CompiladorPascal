@@ -71,7 +71,7 @@ FinDeLinea      = (\r|\n|\r\n)
 Comentario      = "\\\\" {Caracter}* {FinDeLinea}
 
 /* identificador */
-Identificador   = [a-zA-Z]+([_]?[a-zA-Z0-9]+)*
+Identificador   = [a-zA-Z.][a-zA-Z0-9_]*
 
 /* Literales */
 IntegerLiteral  = [0-9]+  
@@ -110,6 +110,9 @@ MOD             = "mod"
     "begin"                     { return symbol("BEGIN",sym.BEGIN); }
     "end"                       { return symbol("END",sym.END); }
     "return"                    { return symbol("RETURN",sym.RETURN); }
+    "var"                      { return symbol("VAR",sym.VAR); }
+    "type"                      { return symbol("TYPE",sym.TYPE); }
+    "record"                    { return symbol("RECORD",sym.RECORD); }
     
     "if"                        { return symbol("IF",sym.IF); }
     "then"                      { return symbol("THEN",sym.THEN); }
@@ -130,19 +133,25 @@ MOD             = "mod"
     "boolean"                   { return symbol("BOOLEAN",sym.BOOLEAN); }
 
     /* LITERALES */
-    "null"                      { return symbol("NULL",sym.NULL); }
+    "nil"                       { return symbol("NIL",sym.NIL); }
     "true"                      { return symbol("TRUE",sym.TRUE); }
     "false"                     { return symbol("FALSE",sym.FALSE); }
 
     /* operadores */
     ":="                        { return symbol("ASSIGN",sym.ASSIGN,yytext()); }
-    {OPLOG}                     { return symbol("OPLOG",sym.OPLOG,yytext()); }
-    {OPREL}                     { return symbol("OPREL",sym.OPREL,yytext()); }
-    {OPSUM}                     { return symbol("OPSUM",sym.OPSUM,yytext()); }
-    {OPMULT}                    { return symbol("OPMULT",sym.OPMULT,yytext()); }
-    {NOT}                       { return symbol("NOT",sym.NOT,yytext()); }
-    {DIV}                       { return symbol("DIV",sym.DIV,yytext()); }
-    {MOD}                       { return symbol("MOD",sym.MOD,yytext()); }
+    "="                         { return symbol("EQ",sym.EQ,yytext()); }
+    "<>"                        { return symbol("NEQ",sym.NEQ,yytext()); }
+    "<"                         { return symbol("LT",sym.LT,yytext()); }
+    ">"                         { return symbol("GT",sym.GT,yytext()); }
+    "<="                        { return symbol("LE",sym.LE,yytext()); }
+    ">="                        { return symbol("GE",sym.GE,yytext()); }
+    "+"                         { return symbol("PLUS",sym.PLUS,yytext()); }
+    "-"                         { return symbol("MINUS",sym.MINUS,yytext()); }
+    "*"                         { return symbol("MULT",sym.MULT,yytext()); }
+    "/"                         { return symbol("SLASH",sym.SLASH,yytext()); }
+    "not"                       { return symbol("NOT",sym.NOT,yytext()); }
+    "div"                       { return symbol("DIV",sym.DIV,yytext()); }
+    "mod"                       { return symbol("MOD",sym.MOD,yytext()); }
     
     /* cadena literal */
     \"                          { yybegin(STRING); sb.setLength(0); }
