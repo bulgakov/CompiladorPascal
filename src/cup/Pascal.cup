@@ -116,6 +116,35 @@ terminal Integer INTEGER_LITERAL;
 
 /* No-Terminales */
 non terminal Program prog;
+non terminal Parameters parameters;
+non terminal IdentifierList identifier_list;
+non terminal Block block;
+non terminal Declarations declarations;
+non terminal Declaration declaration;
+non terminal TypeDeclaration type_declaration;
+non terminal TypeDefinitions type_definitions;
+non terminal TypeDefinition type_definition;
+non terminal RecordType record_type;
+non terminal FieldList field_list;
+non terminal VariableDeclaration variable_declaration;
+non terminal VariableDefinitions variable_definitions;
+non terminal VariableDefinition variable_definition;
+non terminal ProcedureDeclaration procedure_declaration;
+non terminal FunctionDeclaration function_declaration;
+non terminal FormalParamaters formal_parameters;
+non terminal ParameterDefs parameter_defs;
+non terminal ParameterDef parameter_def;
+non terminal Statement statements;
+non terminal Statement statement;
+non terminal Statement assign_statement;
+non terminal Statement procedure_statement;
+non terminal Statement if_statement;
+non terminal Statement else_statement;
+non terminal Statement while_statement;
+non terminal Statement repeat_statement;
+non terminal Statement for_statement;
+non terminal ParameterList parameter_list;
+//non terminal Parameter parameter;
 non terminal Expression opt_expression;
 non terminal Expression expression;
 non terminal Expression relation;
@@ -129,6 +158,7 @@ non terminal String OPLOG;      // and or
 non terminal String OPREL;      // = <> < <= > >=
 non terminal String OPSUM;      // + -
 non terminal String OPMULT;     // * / mod div
+non terminal Type type_simple;
 
 /* Precedencia */
 
@@ -213,7 +243,9 @@ statement                   ::= assign_statement
                             |   while_statement
                             |   repeat_statement
                             |   for_statement
-                            |   
+                            |   write_statement
+                            |   read_statement
+                            |
                             ;
 
 assign_statement            ::= variable ASSIGN expression
@@ -242,8 +274,8 @@ parameter_list              ::= LPAREN parameters RPAREN
                             |   
                             ;
 
-parameters                  ::= expression:e parameters:pl
-                            |   
+parameters                  ::= expression:e COMMA parameters:pl
+                            |   expression:e
                             ;
 
 OPLOG                       ::= AND
@@ -312,7 +344,7 @@ primary                     ::= name:n
                             {: RESULT = n; :}
                             |   INTEGER_LITERAL:i
                             {: RESULT = new IntegerLiteral(i.intValue(), ixleft.getLine(), ixleft.getColumn()); :}
-                            |   FLOAT_LITERAL:f
+                            |   CHAR_LITERAL:f
                             {: RESULT = new FloatLiteral(f.floatValue(), fxleft.getLine(), fxleft.getColumn()); :}
                             |   LPAREN expression:e RPAREN
                             {: RESULT = e; :}
@@ -328,10 +360,14 @@ name                        ::= IDENTIFIER:i
                             {: RESULT = new CallExpression(new Identifier(i, ixleft.getLine(), ixleft.getColumn()), p, ixleft.getLine(), ixleft.getColumn()); :}
                             ;
 
-type                        ::= BOOLEAN:t
+type                        ::= type_simple:t
+                            |   record_type:r
+                            ;
+
+type_simple                 ::= BOOLEAN:t
                             {: RESULT = new BooleanType(txleft.getLine(), txleft.getColumn()); :}
                             |   CHAR:t
-                            {: RESULT = new FloatType(txleft.getLine(), txleft.getColumn()); :}
+                            {: RESULT = new CharType(txleft.getLine(), txleft.getColumn()); :}
                             |   INTEGER:t
                             {: RESULT = new IntegerType(txleft.getLine(), txleft.getColumn()); :}
                             ;
