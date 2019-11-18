@@ -15,11 +15,13 @@ import visitors.Visitor;
  */
 public class WriteStatement extends Statement {
 
-    public Expression param;
+    public String param;
+    public Expression paramOpt;
     
-    public WriteStatement(Expression p, int left, int right) { 
+    public WriteStatement(String s, Expression opt, int left, int right) { 
         super(left, right);
-        param = p; 
+        param = s; 
+        paramOpt = opt;
     }
     
     @Override

@@ -17,4 +17,9 @@ public class IdentifierList {
     public IdentifierList() { 
         Identifiers = new ArrayList<>(); 
     }
+    
+    public void add(Identifier s)
+    {
+        Identifiers.add(0, s);
+    }
 }

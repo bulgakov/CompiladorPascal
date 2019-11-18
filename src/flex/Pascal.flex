@@ -13,7 +13,7 @@ import table.ErrorMsg;
 
 %public
 %cup
-%class AdaScanner
+%class PascalScanner
 %implements sym
 %char
 %line
@@ -25,7 +25,7 @@ import table.ErrorMsg;
     StringBuilder sb = new StringBuilder();
     List<ErrorMsg> errors = new ArrayList<ErrorMsg>();
   
-    public AdaScanner(java.io.Reader in, ComplexSymbolFactory sf){
+    public PascalScanner(java.io.Reader in, ComplexSymbolFactory sf){
         this(in);
         symbolFactory = sf;
     }
@@ -68,7 +68,7 @@ Espacios        = [ \t\f\b]
 FinDeLinea      = (\r|\n|\r\n)
 
 /* Comentarios */
-Comentario      = "\\\\" {Caracter}* {FinDeLinea}
+Comentario      = "{" [^\}]* "}"
 
 /* identificador */
 Identificador   = [a-zA-Z.][a-zA-Z0-9_]*
@@ -77,7 +77,7 @@ Identificador   = [a-zA-Z.][a-zA-Z0-9_]*
 IntegerLiteral  = [0-9]+  
 Cadena          = [^\r\n\"\\]
 Caracter        = [^\r\n\'\\]
-CaracterLiteral = "'" {Caracter} "'"
+CadenaLiteral = "'" ("''" | [^\r\n\'])* "'"
 
 /*Operadores*/
 OPREL           = "=" | "<>" | ">" | "<" | ">=" | "<="
@@ -88,14 +88,14 @@ NOT             = "not"
 DIV             = "div"
 MOD             = "mod"
 
-%state STRING, COMENTARIO
+%state STRING
 
 %%
 
 <YYINITIAL> {
     /* palabras reservadas */
-    "write"                     { return symbol("WRITE",sym.READ); }
-    "read"                      { return symbol("READ",sym.WRITE); }
+    "write"                     { return symbol("WRITE",sym.WRITE); }
+    "read"                      { return symbol("READ",sym.READ); }
     
     "."                         { return symbol("DOT",sym.DOT); }
     ","                         { return symbol("COMMA",sym.COMMA); }
@@ -109,8 +109,7 @@ MOD             = "mod"
     "function"                  { return symbol("FUNCTION",sym.FUNCTION); }
     "begin"                     { return symbol("BEGIN",sym.BEGIN); }
     "end"                       { return symbol("END",sym.END); }
-    "return"                    { return symbol("RETURN",sym.RETURN); }
-    "var"                      { return symbol("VAR",sym.VAR); }
+    "var"                       { return symbol("VAR",sym.VAR); }
     "type"                      { return symbol("TYPE",sym.TYPE); }
     "record"                    { return symbol("RECORD",sym.RECORD); }
     
@@ -123,9 +122,6 @@ MOD             = "mod"
     "while"                     { return symbol("WHILE",sym.WHILE); }
     "repeat"                    { return symbol("REPEAT",sym.REPEAT); }
     "until"                     { return symbol("UNTIL",sym.UNTIL); }
-    "break"                     { return symbol("BREAK",sym.BREAK); }
-    "continue"                  { return symbol("CONTINUE",sym.CONTINUE); }
-    "exit"                      { return symbol("EXIT",sym.EXIT); }
 
     /* TIPOS */
     "char"                      { return symbol("CHAR",sym.CHAR); }
@@ -133,7 +129,7 @@ MOD             = "mod"
     "boolean"                   { return symbol("BOOLEAN",sym.BOOLEAN); }
 
     /* LITERALES */
-    "nil"                       { return symbol("NIL",sym.NIL); }
+    //"nil"                       { return symbol("NIL",sym.NIL); }
     "true"                      { return symbol("TRUE",sym.TRUE); }
     "false"                     { return symbol("FALSE",sym.FALSE); }
 
@@ -149,16 +145,23 @@ MOD             = "mod"
     "-"                         { return symbol("MINUS",sym.MINUS,yytext()); }
     "*"                         { return symbol("MULT",sym.MULT,yytext()); }
     "/"                         { return symbol("SLASH",sym.SLASH,yytext()); }
-    "not"                       { return symbol("NOT",sym.NOT,yytext()); }
     "div"                       { return symbol("DIV",sym.DIV,yytext()); }
     "mod"                       { return symbol("MOD",sym.MOD,yytext()); }
+    "and"                       { return symbol("AND",sym.AND, yytext()); }
+    "or"                        { return symbol("AND",sym.AND, yytext()); }
+    "not"                       { return symbol("NOT",sym.NOT,yytext()); }
+    
     
     /* cadena literal */
-    \"                          { yybegin(STRING); sb.setLength(0); }
-    {CaracterLiteral}           { return symbol("CHAR_LITERAL",sym.CHAR_LITERAL, yytext().charAt(1)); }
+    //\"                        { yybegin(STRING); sb.setLength(0); }
+    //{CaracterLiteral}         { return symbol("CHAR_LITERAL",sym.CHAR_LITERAL, yytext().charAt(1)); }
+    {CadenaLiteral}             {   if (yytext().length() == 1)
+                                        return symbol("CHAR_LITERAL",sym.STRING_LITERAL, yytext());
+                                    else
+                                        return symbol("STRING_LITERAL",sym.STRING_LITERAL, yytext());
+                                }
     {IntegerLiteral}            { return symbol("INTEGER_LITERAL",sym.INTEGER_LITERAL, new Integer(yytext())); }
     {Comentario}                { }
-    "{"                         { yybegin(COMENTARIO); }
     {Espacios}+                 { }
     {FinDeLinea}+               { }
 
@@ -170,23 +173,15 @@ MOD             = "mod"
 }
 
 <STRING> {
-    \"                          { yybegin(YYINITIAL); return symbol("STRING_LITERAL",sym.STRING_LITERAL, sb.toString()); }
+    \"                          { yybegin(YYINITIAL); 
+                                  return symbol("STRING_LITERAL",sym.STRING_LITERAL, sb.toString()); 
+                                }
   
     {Cadena}+                   { sb.append( yytext() ); }
 
     /* errores */
     {FinDeLinea}                { System.out.println("Cadena no finalizada"); 
                                   return symbol("error",sym.error, yytext()); }
-    \\.                         { System.out.println("Caracter no valido \""+yytext()+"\""); 
-                                  return symbol("error",sym.error, yytext()); }
-}
-
-<COMENTARIO> {
-    "}"                         { }
-  
-    {Cadena}+                   { }
-    {FinDeLinea}                { }
-    
     \\.                         { System.out.println("Caracter no valido \""+yytext()+"\""); 
                                   return symbol("error",sym.error, yytext()); }
 }

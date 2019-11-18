@@ -5,8 +5,6 @@
  */
 package ast;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import visitors.CGVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
@@ -15,18 +13,12 @@ import visitors.Visitor;
  *
  * @author mijail
  */
-@XmlRootElement
 public class AssignStatement extends Statement {
-    @XmlElement
-    public Identifier Identifier;
-    @XmlElement
+
+    public Expression Identifier;
     public Expression Expression;
     
-    private AssignStatement() {  // makes JAXB happy, will never be invoked
-        this(null, null, 0, 0);   // ...therefore it doesn't matter what it creates
-    }
-    
-    public AssignStatement(Identifier i, Expression e, int left, int right){ 
+    public AssignStatement(Expression i, Expression e, int left, int right){ 
         super(left, right);
         Identifier=i; 
         Expression=e; 

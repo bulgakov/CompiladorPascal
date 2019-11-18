@@ -6,7 +6,7 @@
 package table;
 
 import java.util.*;
-import type.Undefined;
+import type.BaseType;
 
 /**
  *
@@ -16,6 +16,7 @@ public class SymbolTable {
     public String name;
     
     public Map<String, SymbolInfo> table;
+    public Map<String, SymbolType> types;
     public Map<String, SymbolTable> scopes;
     
     public SymbolTable parent;
@@ -25,8 +26,8 @@ public class SymbolTable {
     public boolean updated;
     
     public SymbolTable(SymbolTable parent) { 
-        table = new HashMap<String, SymbolInfo>();
-        scopes = new HashMap<String, SymbolTable>();
+        table = new HashMap<>();
+        scopes = new HashMap<>();
         this.parent = parent;
         updated = false;
         this.depth = (parent == null) ? 0 : parent.depth + 1;
@@ -36,6 +37,12 @@ public class SymbolTable {
         if (table.get(s) != null)
             throw new Exception(s + "is already declared.");
         table.put(s, i);
+    }
+    
+    public void put(String s, SymbolType t) throws Exception { 
+        if (types.get(s) != null)
+            throw new Exception(s + "is already declared.");
+        types.put(s, t);
     }
     
     public void put(String s, SymbolTable t) throws Exception { 
@@ -51,8 +58,20 @@ public class SymbolTable {
                 return i;
         }
         
-        SymbolInfo undef = new SymbolInfo(s, null, Undefined.UNDEFINED);
+        SymbolInfo undef = new SymbolInfo(s, null, BaseType.UNDEFINED);
         table.put(s, undef);
+        return undef;
+    }
+    
+    public SymbolType getType(String s) { 
+        for (SymbolTable t = this; t != null; t = t.parent) {
+            SymbolType i = t.types.get(s);
+            if (i != null) 
+                return i;
+        }
+        
+        SymbolType undef = new SymbolType(s, null, BaseType.UNDEFINED);
+        types.put(s, undef);
         return undef;
     }
     

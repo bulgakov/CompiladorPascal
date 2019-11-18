@@ -18,22 +18,11 @@ public class SymbolInfo {
     public Type type;
     public int offset;
     
-    public String mode;
-    
     public SymbolInfo(String id, String belonging, Type type) {
         this.id = id;
         this.belonging = belonging;
         this.type = type;
         this.offset = -1;
-        this.mode = null;
-    }
-    
-    public SymbolInfo(String id, String belonging, Type type, String mode) {
-        this.id = id;
-        this.belonging = belonging;
-        this.type = type;
-        this.offset = -1;
-        this.mode = mode;
     }
     
     public String getId() { 

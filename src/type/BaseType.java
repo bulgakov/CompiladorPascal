@@ -11,34 +11,31 @@ package type;
  */
 public class BaseType extends Type {
     
-    public static final BaseType INTEGER = new BaseType("integer");
-    public static final BaseType BOOLEAN = new BaseType("boolean");
-    public static final BaseType FLOAT = new BaseType("float");
-    public static final BaseType STRING = new BaseType("string");
+    public static final BaseType INTEGER = new BaseType("integer", 4);
+    public static final BaseType BOOLEAN = new BaseType("boolean", 4);
+    public static final BaseType FLOAT = new BaseType("float", 4);
+    public static final BaseType CHAR = new BaseType("char", 2);
+    public static final BaseType STRING = new BaseType("string", 2);
+    public static final BaseType VOID = new BaseType("void");
+    public static final BaseType UNDEFINED = new BaseType("undefined");
     
-    private String rep;
-    
-    private BaseType() {
-        this(null);
+    private BaseType(String n) {
+        name = n;
+        size = 0;
     }
     
-    public BaseType(String rep) {
-        this.rep = rep;
+    private BaseType(String n, int s) {
+        name = n;
+        size = s;
     }
     
     @Override
     public boolean same(Type e) {
-        return e == this;
+        return e.name.equalsIgnoreCase(this.name);
     }
 
     @Override
     public boolean assignable(Type e) {
-        return e == this;
+        return e.name.equalsIgnoreCase(this.name);
     }
-
-    @Override
-    public String toString() {
-        return this.rep;
-    }
-    
 }

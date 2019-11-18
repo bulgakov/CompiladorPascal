@@ -14,16 +14,15 @@ import java.util.List;
  */
 public class ProcType extends Type {
 
-    public String name;
     public Type returnType;
     public List<Type> params;
-    public SymbolTable thisType;
+    public SymbolTable table;
     
-    public ProcType(SymbolTable table, String name, Type returnType, List<Type> params) { 
-        this.thisType = table;
-        this.name = name;
-        this.returnType = returnType;
-        this.params = params;
+    public ProcType(String n, Type r, List<Type> p, SymbolTable t) { 
+        table = t;
+        name = n;
+        returnType = r;
+        params = p;
     }
     
     public void addParameter(Type t) { 

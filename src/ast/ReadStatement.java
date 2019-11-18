@@ -15,11 +15,11 @@ import visitors.Visitor;
  */
 public class ReadStatement extends Statement {
 
-    public Identifier Identifier;
+    public Expression Expression;
     
-    public ReadStatement(Identifier i, int left, int right) { 
+    public ReadStatement(Expression e, int left, int right) { 
         super(left, right);
-        Identifier=i; 
+        Expression=e; 
     }
     
     @Override

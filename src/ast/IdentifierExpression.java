@@ -15,11 +15,19 @@ import visitors.Visitor;
  */
 public class IdentifierExpression extends Expression {
 
-    public Identifier Identifier;
+    public Identifier id;
+    public Identifier field;
 
     public IdentifierExpression(Identifier i, int left, int right) {
         super(left, right);
-        Identifier=i; 
+        id=i;
+        field=null;
+    }
+    
+    public IdentifierExpression(Identifier i, Identifier f, int left, int right) {
+        super(left, right);
+        id=i;
+        field=f;
     }
     
     @Override
