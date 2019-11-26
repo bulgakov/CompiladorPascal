@@ -19,4 +19,8 @@ public class Parameters {
     public Parameters() { 
         Parameters = new ArrayList<>(); 
     }
+    
+    public void add(Expression e){
+        Parameters.add(0, e);
+    }
 }

@@ -16,11 +16,13 @@ import visitors.Visitor;
  */
 public class Program extends ASTNode {
 
-    public SubProgramBody SubProgramBody;
+    public String id;
+    public Block Block;
     
-    public Program(SubProgramBody s, int left, int right) { 
+    public Program(String s, Block b, int left, int right) { 
         super(left, right);
-        SubProgramBody = s; 
+        id = s;
+        Block = b;
     }
     
     public void accept(GlobalTableVisitor v) { 

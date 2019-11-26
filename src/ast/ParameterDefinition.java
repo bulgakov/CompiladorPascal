@@ -17,18 +17,14 @@ import visitors.Visitor;
 
 public class ParameterDefinition extends ASTNode {
 
-    public ParameterNameList ParameterNameList;
+    public Identifier id;
     public Type Type;
-    public Expression Expression;
     
-    public ParameterDefinition(ParameterNameList l, Type t, Expression e, int left, int right) { 
+    public ParameterDefinition(Identifier i, Type t, int left, int right) { 
         super(left, right);
-        this.ParameterNameList=l; 
-        this.Type=t; 
-        this.Expression=e;
-        this.type = t.type;
-        for(Identifier id : ParameterNameList.Identifiers)
-            id.type = t.type;
+        id=i; 
+        Type=t; 
+        type = t.type;
     }
     
     public void accept(GlobalTableVisitor v) { 

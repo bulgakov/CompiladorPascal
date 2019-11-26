@@ -5,25 +5,28 @@
  */
 package type;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 /**
  *
  * @author mijail
  */
-@XmlType(namespace="type")
-@XmlSeeAlso({
-    BaseType.class,
-    ProcType.class,
-    Undefined.class,
-    Void.class})
 public abstract class Type {
-    @XmlTransient
+    protected int size;
+    protected String name;
+    
+    public int getSize(){
+        return size;
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
     public abstract boolean same(Type e);
-    @XmlTransient
+    
     public abstract boolean assignable(Type e);
+    
     @Override
-    public abstract String toString();
+    public String toString() {
+        return name;
+    }
 }

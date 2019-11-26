@@ -16,14 +16,14 @@ import visitors.Visitor;
 public class IfStatement extends Statement {
 
     public Expression Expression;
-    public Statements Statements;
-    public Statements ElseStatements;
+    public Statement Statement;
+    public Statement ElseStatement;
     
-    public IfStatement(Expression e, Statements s, Statements els, int left, int right) {
+    public IfStatement(Expression e, Statement s, Statement els, int left, int right) {
         super(left, right);
         Expression=e; 
-        Statements=s; 
-        ElseStatements=els;
+        Statement=s; 
+        ElseStatement=els;
     }
     
     @Override

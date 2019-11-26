@@ -72,6 +72,7 @@
     -->
     <property name="cup"     location="src/cup"     />
     <property name="jflex"   location="src/flex"    />
+    <property name="res"     location="resources"     />
     <property name="src"     location="src"     />
     <property name="classes" location="bin" />
     <property name="dist"    location="dist"    />
@@ -98,13 +99,14 @@
   
     <path id="libraries">
         <files includes="${lib}/java-cup-11b-runtime.jar" />
+        <files includes="${lib}/xstream-1.4.11.1.jar" />
     </path>
     <target name="compile" depends="generate">
         <javac srcdir="${src}" destdir="${classes}" includeantruntime="false">
             <classpath refid="libraries" />
         </javac>
     </target>
-
+    
     <target name="jar" depends="compile">
         <jar jarfile="${dist}/${jarname}.jar" basedir="${classes}">
             <manifest>
@@ -115,12 +117,15 @@
         <copy todir="${dist}">
             <fileset dir="${lib}" includes="**/**.jar"/>
         </copy>
+        <copy todir="${dist}">
+            <fileset dir="${res}" includes="**/*.pas" />
+        </copy>
     </target>
 
     <!-- Test the parser in a single run -->
     <target name="run" depends="jar">
         <java jar="${dist}/${jarname}.jar" fork="true">
-            <arg value="input.txt" />
+            <arg value="test.pas" />
         </java>
     </target>
 

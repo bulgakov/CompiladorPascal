@@ -5,8 +5,6 @@
  */
 package ast;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import visitors.CGVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
@@ -15,18 +13,11 @@ import visitors.Visitor;
  *
  * @author mijail
  */
-@XmlRootElement
 public class AritmeticExpression extends Expression {
-    @XmlElement
-    public String Operator;
-    @XmlElement
-    public Expression Exp1;
-    @XmlElement
-    public Expression Exp2;
     
-    private AritmeticExpression() {  // makes JAXB happy, will never be invoked
-        this(null, null, null, 0, 0);   // ...therefore it doesn't matter what it creates
-    }
+    public String Operator;
+    public Expression Exp1;
+    public Expression Exp2;
     
     public AritmeticExpression(String op, Expression e1, Expression e2, int left, int right){ 
         super(left, right);

@@ -10,13 +10,13 @@ package table;
  * @author mijail
  */
 public class ErrorMsg {
-    private int left;
-    private int right;
+    private int line;
+    private int column;
     private String message;
     
-    public ErrorMsg(int left, int right, String message) {
-        this.left = left;
-        this.right = right;
+    public ErrorMsg(int l, int c, String message) {
+        this.line = l;
+        this.column = c;
         this.message = message;
     }
     
@@ -24,9 +24,9 @@ public class ErrorMsg {
     public String toString() { 
         StringBuilder strb = new StringBuilder();
         strb.append("Error at ");
-        strb.append(left);
+        strb.append(line);
         strb.append(" , ");
-        strb.append(right);
+        strb.append(column);
         strb.append(" : ");
         strb.append(message);
         return strb.toString();

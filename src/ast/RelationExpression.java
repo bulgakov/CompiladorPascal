@@ -19,10 +19,6 @@ public class RelationExpression extends Expression {
     public Expression Exp1;
     public Expression Exp2;
     
-    private RelationExpression() {  // makes JAXB happy, will never be invoked
-        this(null, null, null, 0, 0);   // ...therefore it doesn't matter what it creates
-    }
-    
     public RelationExpression(String op, Expression e1, Expression e2, int left, int right){ 
         super(left, right);
         Operator=op; 

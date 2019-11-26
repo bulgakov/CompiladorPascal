@@ -7,12 +7,12 @@ package ast;
 
 /**
  *
- * @author mijail
+ * @author mijai
  */
 public class Identifier extends ASTNode {
-
+    
     public String id;
-
+    
     public Identifier(String i, int left, int right) 
     {
         super(left,right);
