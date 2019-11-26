@@ -10,15 +10,14 @@ package ast;
  * @author mijai
  */
 public class Identifier extends ASTNode {
-    
+
     public String id;
-    
-    public Identifier(String i, int left, int right) 
-    {
-        super(left,right);
-        id=i; 
+
+    public Identifier(String i, int left, int right) {
+        super(left, right);
+        id = i;
     }
-    
+
     @Override
     public String toString() {
         return id;

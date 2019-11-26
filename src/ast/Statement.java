@@ -14,13 +14,14 @@ import visitors.Visitor;
  * @author mijail
  */
 public abstract class Statement extends ASTNode {
-    
-    public Statement(int left, int right)
-    {
+
+    public Statement(int left, int right) {
         super(left, right);
     }
-    
+
     public abstract void accept(Visitor v);
+
     public abstract void accept(TypeVisitor v);
+
     public abstract void accept(CGVisitor v);
 }

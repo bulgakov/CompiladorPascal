@@ -6,7 +6,7 @@
 package ast;
 
 import visitors.CGVisitor;
-import visitors.GlobalTableVisitor;
+import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
 
@@ -19,11 +19,11 @@ public class ErrorProgram extends Program {
     public ErrorProgram(int left, int right) {
         super(null, null, left, right);
     }
-    
-    public void accept(GlobalTableVisitor v) {
+
+    public void accept(SymbolTableVisitor v) {
         v.visit(this);
     }
-    
+
     public void accept(Visitor v) {
         v.visit(this);
     }

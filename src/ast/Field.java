@@ -9,14 +9,14 @@ package ast;
  *
  * @author mijail
  */
-public class Field extends ASTNode { 
-    
+public class Field extends ASTNode {
+
     public Identifier id;
     public Type Type;
-    
+
     public Field(Identifier i, Type t, int left, int right) {
         super(left, right);
-        id=i;
-        Type=t;
+        id = i;
+        Type = t;
     }
 }

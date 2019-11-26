@@ -15,12 +15,12 @@ import java.util.List;
 public class Declarations {
 
     public List<Declaration> Declarations;
-        
-    public Declarations(){
-        Declarations = new ArrayList<>(); 
+
+    public Declarations() {
+        Declarations = new ArrayList<>();
     }
-    
-    public void add(Declaration d){
+
+    public void add(Declaration d) {
         Declarations.add(0, d);
     }
 }

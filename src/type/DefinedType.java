@@ -10,17 +10,17 @@ package type;
  * @author mijai
  */
 public class DefinedType extends Type {
-    
+
     public DefinedType(String n) {
         name = n;
         size = 0;
     }
-    
+
     private DefinedType(String n, int s) {
         name = n;
         size = s;
     }
-    
+
     @Override
     public boolean same(Type e) {
         return e.name.equalsIgnoreCase(this.name);

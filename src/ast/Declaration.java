@@ -6,7 +6,7 @@
 package ast;
 
 import visitors.CGVisitor;
-import visitors.GlobalTableVisitor;
+import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
 
@@ -20,8 +20,11 @@ public abstract class Declaration extends ASTNode {
         super(left, right);
     }
 
-    public abstract void accept(GlobalTableVisitor v);
+    public abstract void accept(SymbolTableVisitor v);
+
     public abstract void accept(Visitor v);
+
     public abstract void accept(TypeVisitor v);
+
     public abstract void accept(CGVisitor v);
 }

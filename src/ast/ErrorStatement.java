@@ -18,7 +18,7 @@ public class ErrorStatement extends Statement {
     public ErrorStatement(int left, int right) {
         super(left, right);
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);
@@ -33,5 +33,5 @@ public class ErrorStatement extends Statement {
     public void accept(CGVisitor v) {
         v.visit(this);
     }
-    
+
 }

@@ -6,22 +6,39 @@
 package ast;
 
 import type.BaseType;
+import visitors.CGVisitor;
+import visitors.SymbolTableVisitor;
+import visitors.TypeVisitor;
 import visitors.Visitor;
 
 /**
  *
  * @author mijail
  */
-public class CharType extends Type { 
-    
-    public CharType(int left, int right) { 
+public class CharType extends Type {
+
+    public CharType(int left, int right) {
         super(left, right);
-        type = BaseType.INTEGER;
-        super.type = type;
-    } 
-    
+        type = BaseType.CHAR;
+    }
+
+    @Override
+    public void accept(SymbolTableVisitor v) {
+        v.visit(this);
+    }
+
     @Override
     public void accept(Visitor v) {
+        v.visit(this);
+    }
+
+    @Override
+    public void accept(TypeVisitor v) {
+        v.visit(this);
+    }
+
+    @Override
+    public void accept(CGVisitor v) {
         v.visit(this);
     }
 }

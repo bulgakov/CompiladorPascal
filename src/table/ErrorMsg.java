@@ -10,18 +10,19 @@ package table;
  * @author mijail
  */
 public class ErrorMsg {
+
     private int line;
     private int column;
     private String message;
-    
+
     public ErrorMsg(int l, int c, String message) {
         this.line = l;
         this.column = c;
         this.message = message;
     }
-    
+
     @Override
-    public String toString() { 
+    public String toString() {
         StringBuilder strb = new StringBuilder();
         strb.append("Error at ");
         strb.append(line);

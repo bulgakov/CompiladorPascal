@@ -14,12 +14,14 @@ import visitors.Visitor;
  * @author mijail
  */
 public abstract class Expression extends ASTNode {
-    
-    public Expression (int left, int right) {
+
+    public Expression(int left, int right) {
         super(left, right);
-    } 
-    
+    }
+
     public abstract void accept(Visitor v);
+
     public abstract void accept(TypeVisitor v);
+
     public abstract void accept(CGVisitor v);
 }

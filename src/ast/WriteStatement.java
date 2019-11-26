@@ -17,13 +17,13 @@ public class WriteStatement extends Statement {
 
     public String param;
     public Expression paramOpt;
-    
-    public WriteStatement(String s, Expression opt, int left, int right) { 
+
+    public WriteStatement(String s, Expression opt, int left, int right) {
         super(left, right);
-        param = s; 
+        param = s;
         paramOpt = opt;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

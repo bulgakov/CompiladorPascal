@@ -25,45 +25,46 @@ import table.SymbolTable;
  * @author mijail
  */
 public class ICGVisitor implements CGVisitor {
+
     private SymbolTable global;
     private SymbolTable top;
-    private Map<String,Integer> labels; 
+    private Map<String, Integer> labels;
     private List<TAddressCode> pseudocode;
-    
+
     public ICGVisitor(SymbolTable global) {
         this.labels = new HashMap<>();
         this.pseudocode = new ArrayList<>();
         this.global = global;
         this.top = global;
     }
-    
+
     private void gen(String i) {
         gen(i, null);
     }
-    
+
     private void gen(String i, String p) {
         gen(i, p, null);
     }
-    
+
     private void gen(String i, String p, String s1) {
         gen(i, p, s1, null);
     }
-    
+
     private void gen(String i, String p, String s1, String s2) {
         this.pseudocode.add(new TAddressCode(i, p, s1, s2));
     }
-    
+
     private String label(String s) {
         if (labels.containsKey(s)) {
             int count = labels.get(s);
             labels.put(s, count + 1);
             return s + (count + 1);
         }
-        
+
         labels.put(s, 0);
         return s + 0;
     }
-    
+
     public String getPseudoCode() {
         StringBuilder strb = new StringBuilder();
         for (TAddressCode a : this.pseudocode) {
@@ -71,15 +72,14 @@ public class ICGVisitor implements CGVisitor {
         }
         return strb.toString();
     }
-    
-    public List<TAddressCode> getPseudoCodeList()
-    {
+
+    public List<TAddressCode> getPseudoCodeList() {
         return this.pseudocode;
     }
-    
-    public void writePseudoCode(String file){
+
+    public void writePseudoCode(String file) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-              new FileOutputStream(file), "utf-8"))) {
+                new FileOutputStream(file), "utf-8"))) {
             for (TAddressCode a : this.pseudocode) {
                 writer.write(a.toString());
             }
@@ -88,7 +88,7 @@ public class ICGVisitor implements CGVisitor {
             ex.printStackTrace();
         }
     }
-    
+
 //    @Override
 //    public void visit(Program n) {
 //        n.SubProgramBody.accept(this);
@@ -307,7 +307,6 @@ public class ICGVisitor implements CGVisitor {
 //        //Should never get in here
 //        //Nothing to do
 //    }
-
     @Override
     public void visit(Program n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -324,17 +323,7 @@ public class ICGVisitor implements CGVisitor {
     }
 
     @Override
-    public void visit(Declarations n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void visit(TypeDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void visit(TypeDefinitions n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -344,17 +333,7 @@ public class ICGVisitor implements CGVisitor {
     }
 
     @Override
-    public void visit(FieldList n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void visit(VariableDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void visit(VariableDefinitions n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -365,11 +344,6 @@ public class ICGVisitor implements CGVisitor {
 
     @Override
     public void visit(ProcedureDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void visit(ParameterDefinitions n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -405,12 +379,32 @@ public class ICGVisitor implements CGVisitor {
 
     @Override
     public void visit(IfStatement n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.Expression.Verdadera = label("ETIQ");
+        n.Expression.Falsa = n.ElseStatement != null ? label("ETIQ") : n.Siguiente;
+
+        // Expr
+        n.Expression.accept(this);
+        gen("LABEL", n.Expression.Verdadera);
+
+        n.Statement.Siguiente = n.Siguiente;
+
+        // S1
+        n.Statement.accept(this);
+
+        if (n.ElseStatement != null) {
+            gen("GOTO", n.Siguiente);
+            gen("LABEL", n.Expression.Falsa);
+
+            n.ElseStatement.Siguiente = n.Siguiente;
+
+            // S2
+            n.ElseStatement.accept(this);
+        }
     }
 
     @Override
     public void visit(WhileStatement n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
@@ -424,18 +418,17 @@ public class ICGVisitor implements CGVisitor {
     }
 
     @Override
-    public void visit(Parameters n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void visit(LogicalExpression n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void visit(RelationExpression n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.Exp1.accept(this);
+        n.Exp2.accept(this);
+        
+        gen("IF" + n.Operator, n.Verdadera, n.Exp1.Lugar, n.Exp2.Lugar);
+        gen("GOTO", n.Falsa);
     }
 
     @Override
@@ -445,7 +438,10 @@ public class ICGVisitor implements CGVisitor {
 
     @Override
     public void visit(NotExpression n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.Exp.Verdadera = n.Falsa;
+        n.Exp.Falsa = n.Verdadera;
+        
+        n.Exp.accept(this);
     }
 
     @Override
@@ -469,18 +465,23 @@ public class ICGVisitor implements CGVisitor {
     }
 
     @Override
+    public void visit(CharLiteral n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public void visit(IntegerLiteral n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void visit(True n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        gen("GOTO", n.Verdadera);
     }
 
     @Override
     public void visit(False n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        gen("GOTO", n.Falsa);
     }
 
     @Override
@@ -523,5 +524,4 @@ public class ICGVisitor implements CGVisitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
 }

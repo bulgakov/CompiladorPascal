@@ -14,15 +14,16 @@ import visitors.Visitor;
  * @author mijai
  */
 public class ProcedureStatement extends Statement {
+
     public Identifier id;
     public Parameters Parameters;
-    
+
     public ProcedureStatement(Identifier i, Parameters pl, int left, int right) {
         super(left, right);
-        id=i; 
-        Parameters=pl; 
+        id = i;
+        Parameters = pl;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

@@ -8,7 +8,7 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 import visitors.CGVisitor;
-import visitors.GlobalTableVisitor;
+import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
 
@@ -19,14 +19,14 @@ import visitors.Visitor;
 public class TypeDeclaration extends Declaration {
 
     public TypeDefinitions TypeDefinitions;
-    
-    public TypeDeclaration(TypeDefinitions t, int left, int right) { 
+
+    public TypeDeclaration(TypeDefinitions t, int left, int right) {
         super(left, right);
         TypeDefinitions = t;
     }
 
     @Override
-    public void accept(GlobalTableVisitor v) {
+    public void accept(SymbolTableVisitor v) {
         v.visit(this);
     }
 

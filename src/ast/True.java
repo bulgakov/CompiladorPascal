@@ -14,15 +14,15 @@ import visitors.Visitor;
  * @author mijail
  */
 public class True extends Expression {
-    
+
     private True() {
-        this(0,0);
+        this(0, 0);
     }
-    
-    public True(int left, int right){
+
+    public True(int left, int right) {
         super(left, right);
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

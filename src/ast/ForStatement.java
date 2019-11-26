@@ -15,17 +15,17 @@ import visitors.Visitor;
  */
 public class ForStatement extends Statement {
 
-    public Identifier Identifier;
+    public Identifier id;
     public Expression Exp1;
     public Expression Exp2;
     public Statement Statement;
-    
-    public ForStatement(Identifier id, Expression e1, Expression e2, Statement s, int left, int right) {
+
+    public ForStatement(Identifier i, Expression e1, Expression e2, Statement s, int left, int right) {
         super(left, right);
-        Identifier=id; 
-        Exp1=e1; 
-        Exp2=e2;
-        Statement=s;
+        id = i;
+        Exp1 = e1;
+        Exp2 = e2;
+        Statement = s;
     }
 
     @Override

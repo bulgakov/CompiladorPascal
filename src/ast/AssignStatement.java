@@ -17,13 +17,13 @@ public class AssignStatement extends Statement {
 
     public Expression Identifier;
     public Expression Expression;
-    
-    public AssignStatement(Expression i, Expression e, int left, int right){ 
+
+    public AssignStatement(Expression i, Expression e, int left, int right) {
         super(left, right);
-        Identifier=i; 
-        Expression=e; 
+        Identifier = i;
+        Expression = e;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

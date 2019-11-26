@@ -11,16 +11,15 @@ import java.util.*;
  *
  * @author mijail
  */
-
 public class Parameters {
 
     public List<Expression> Parameters;
-    
-    public Parameters() { 
-        Parameters = new ArrayList<>(); 
+
+    public Parameters() {
+        Parameters = new ArrayList<>();
     }
-    
-    public void add(Expression e){
+
+    public void add(Expression e) {
         Parameters.add(0, e);
     }
 }

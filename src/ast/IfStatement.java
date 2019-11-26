@@ -18,14 +18,14 @@ public class IfStatement extends Statement {
     public Expression Expression;
     public Statement Statement;
     public Statement ElseStatement;
-    
+
     public IfStatement(Expression e, Statement s, Statement els, int left, int right) {
         super(left, right);
-        Expression=e; 
-        Statement=s; 
-        ElseStatement=els;
+        Expression = e;
+        Statement = s;
+        ElseStatement = els;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

@@ -18,7 +18,7 @@ public class ErrorExpression extends Expression {
     public ErrorExpression(int left, int right) {
         super(left, right);
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);
@@ -33,5 +33,5 @@ public class ErrorExpression extends Expression {
     public void accept(CGVisitor v) {
         v.visit(this);
     }
-    
+
 }

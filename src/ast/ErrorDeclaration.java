@@ -6,7 +6,7 @@
 package ast;
 
 import visitors.CGVisitor;
-import visitors.GlobalTableVisitor;
+import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
 
@@ -19,12 +19,12 @@ public class ErrorDeclaration extends Declaration {
     public ErrorDeclaration(int left, int right) {
         super(left, right);
     }
-    
+
     @Override
-    public void accept(GlobalTableVisitor v) {
+    public void accept(SymbolTableVisitor v) {
         v.visit(this);
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);
@@ -39,5 +39,5 @@ public class ErrorDeclaration extends Declaration {
     public void accept(CGVisitor v) {
         v.visit(this);
     }
-    
+
 }

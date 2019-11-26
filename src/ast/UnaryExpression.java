@@ -17,13 +17,13 @@ public class UnaryExpression extends Expression {
 
     public String Operator;
     public Expression Exp1;
-    
-    public UnaryExpression(String op, Expression e1, int left, int right) { 
+
+    public UnaryExpression(String op, Expression e1, int left, int right) {
         super(left, right);
-        Operator=op; 
-        Exp1=e1;
+        Operator = op;
+        Exp1 = e1;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

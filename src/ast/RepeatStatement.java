@@ -14,15 +14,16 @@ import visitors.Visitor;
  * @author mijai
  */
 public class RepeatStatement extends Statement {
+
     public Expression Expression;
     public Statements Statements;
-    
+
     public RepeatStatement(Expression e, Statements s, int left, int right) {
         super(left, right);
-        Expression=e; 
-        Statements=s; 
+        Expression = e;
+        Statements = s;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

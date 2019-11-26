@@ -15,15 +15,15 @@ import visitors.Visitor;
  */
 public class CallExpression extends Expression {
 
-    public Identifier Identifier;
+    public Identifier id;
     public Parameters Parameters;
-    
-    public CallExpression(Identifier i, Parameters p, int left, int right) { 
+
+    public CallExpression(Identifier i, Parameters p, int left, int right) {
         super(left, right);
-        Identifier=i; 
-        Parameters=p; 
+        id = i;
+        Parameters = p;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

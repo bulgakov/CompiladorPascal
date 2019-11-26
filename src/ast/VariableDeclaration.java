@@ -6,7 +6,7 @@
 package ast;
 
 import visitors.CGVisitor;
-import visitors.GlobalTableVisitor;
+import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
 import visitors.Visitor;
 
@@ -17,14 +17,14 @@ import visitors.Visitor;
 public class VariableDeclaration extends Declaration {
 
     public VariableDefinitions VariableDefinitions;
-    
-    public VariableDeclaration(VariableDefinitions vl, int left, int right) { 
+
+    public VariableDeclaration(VariableDefinitions vl, int left, int right) {
         super(left, right);
-        VariableDefinitions = vl; 
+        VariableDefinitions = vl;
     }
 
     @Override
-    public void accept(GlobalTableVisitor v) {
+    public void accept(SymbolTableVisitor v) {
         v.visit(this);
     }
 

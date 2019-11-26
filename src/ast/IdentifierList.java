@@ -11,15 +11,15 @@ import java.util.*;
  *
  * @author mijail
  */
-public class IdentifierList { 
+public class IdentifierList {
+
     public List<Identifier> Identifiers;
-    
-    public IdentifierList() { 
-        Identifiers = new ArrayList<>(); 
+
+    public IdentifierList() {
+        Identifiers = new ArrayList<>();
     }
-    
-    public void add(Identifier s)
-    {
+
+    public void add(Identifier s) {
         Identifiers.add(0, s);
     }
 }

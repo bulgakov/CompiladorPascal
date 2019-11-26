@@ -5,6 +5,11 @@
  */
 package ast;
 
+import visitors.CGVisitor;
+import visitors.SymbolTableVisitor;
+import visitors.TypeVisitor;
+import visitors.Visitor;
+
 /**
  *
  * @author mijail
@@ -13,10 +18,26 @@ public class Block extends ASTNode {
 
     public Declarations Declarations;
     public Statements Statements;
-    
+
     public Block(Declarations dl, Statements sl, int left, int right) {
-        super(left,right);
-        Declarations=dl; 
-        Statements=sl;
+        super(left, right);
+        Declarations = dl;
+        Statements = sl;
+    }
+
+    public void accept(SymbolTableVisitor v) {
+        v.visit(this);
+    }
+
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
+
+    public void accept(TypeVisitor v) {
+        v.visit(this);
+    }
+
+    public void accept(CGVisitor v) {
+        v.visit(this);
     }
 }

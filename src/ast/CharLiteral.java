@@ -11,17 +11,15 @@ import visitors.Visitor;
 
 /**
  *
- * @author mijai
+ * @author mijail
  */
-public class WhileStatement extends Statement {
+public class CharLiteral extends Expression {
 
-    public Expression Expression;
-    public Statement Statement;
+    public String s;
 
-    public WhileStatement(Expression e, Statement s, int left, int right) {
+    public CharLiteral(String s, int left, int right) {
         super(left, right);
-        Expression = e;
-        Statement = s;
+        this.s = s;
     }
 
     @Override

@@ -16,12 +16,12 @@ import visitors.Visitor;
 public class NotExpression extends Expression {
 
     public Expression Exp;
-    
-    public NotExpression(Expression e, int left, int right) { 
+
+    public NotExpression(Expression e, int left, int right) {
         super(left, right);
-        Exp=e; 
+        Exp = e;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

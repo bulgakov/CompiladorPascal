@@ -5,6 +5,9 @@
  */
 package ast;
 
+import visitors.CGVisitor;
+import visitors.SymbolTableVisitor;
+import visitors.TypeVisitor;
 import visitors.Visitor;
 
 /**
@@ -12,14 +15,20 @@ import visitors.Visitor;
  * @author mijail
  */
 public abstract class Type extends ASTNode {
-    
+
     private Type() {
-        this(0,0);
+        this(0, 0);
     }
-    
-    public Type(int left, int right){
+
+    public Type(int left, int right) {
         super(left, right);
     }
-    
+
+    public abstract void accept(SymbolTableVisitor v);
+
     public abstract void accept(Visitor v);
+
+    public abstract void accept(TypeVisitor v);
+
+    public abstract void accept(CGVisitor v);
 }

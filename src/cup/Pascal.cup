@@ -8,7 +8,8 @@ import table.ErrorMsg;
 /* Inicializacion  */
 parser code {: 
     private List<ErrorMsg> errors = new ArrayList<ErrorMsg>();
-
+    
+    @Override
     public void report_error(String message, Object info) {       
         /* Alt error print */
         /*
@@ -46,8 +47,15 @@ parser code {:
             errors.add(new ErrorMsg(0, 0, err.toString()));
     }
 
+    @Override
     public void syntax_error(Symbol symbol) {
-        report_error("Syntax error", symbol);
+        //report_error("Syntax error", symbol);
+        String error_msg = "Syntax error on ["
+                + ((symbol.sym == sym.error || symbol.sym == sym.IDENTIFIER)
+                        ? symbol.value.toString()
+                        : symbl_name_from_id(symbol.sym))
+                + "]";
+        report_error(error_msg, symbol);
     }
     
     public List<ErrorMsg> getErrors() { 
@@ -491,7 +499,7 @@ primary                     ::= variable:v
                             |   INTEGER_LITERAL:i
                             {:  RESULT = new IntegerLiteral(i.intValue(), ixleft.getLine(), ixleft.getColumn()); :}
                             |   CHAR_LITERAL:s
-                            {:  RESULT = new StringLiteral(s, sxleft.getLine(), sxleft.getColumn()); :}
+                            {:  RESULT = new CharLiteral(s, sxleft.getLine(), sxleft.getColumn()); :}
                             |   TRUE:e
                             {:  RESULT = new True(exleft.getLine(), exleft.getColumn()); :}
                             |   FALSE:e

@@ -14,6 +14,7 @@ import java.util.List;
  * @author mijai
  */
 public class ParameterDefinitions {
+
     public List<ParameterDefinition> Parameters;
 
     public ParameterDefinitions() {
@@ -23,15 +24,15 @@ public class ParameterDefinitions {
     public void add(ParameterDefinition t) {
         Parameters.add(0, t);
     }
-    
-    public void add(ParameterDefinitions pl){
+
+    public void add(ParameterDefinitions pl) {
         int index = 0;
         for (ParameterDefinition t : pl.Parameters) {
             Parameters.add(index, t);
             index++;
         }
     }
-    
+
     public void add(IdentifierList il, Type t) {
         for (Identifier id : il.Identifiers) {
             Parameters.add(new ParameterDefinition(id, t, id.getLine(), id.getColumn()));

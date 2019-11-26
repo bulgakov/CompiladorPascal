@@ -12,36 +12,37 @@ import type.Type;
  * @author mijail
  */
 public abstract class ASTNode {
+
     protected int line;
     protected int column;
     protected int depth;
-    
+
     public Type type;
-    
+
     public String Lugar;
     public String Verdadera;
     public String Falsa;
     public String Siguiente;
-    
+
     private ASTNode() {
         this(0, 0);
     }
-    
+
     public ASTNode(int line, int column) {
         this.line = line;
         this.column = column;
         depth = 0;
     }
-    
-    public int getLine(){
+
+    public int getLine() {
         return line;
     }
-    
-    public int getColumn(){
+
+    public int getColumn() {
         return column;
     }
-    
-    public int getDepth(){
+
+    public int getDepth() {
         return depth;
-    } 
+    }
 }

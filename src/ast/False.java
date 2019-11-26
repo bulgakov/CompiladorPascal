@@ -14,11 +14,11 @@ import visitors.Visitor;
  * @author mijail
  */
 public class False extends Expression {
-    
-    public False(int left, int right){
+
+    public False(int left, int right) {
         super(left, right);
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

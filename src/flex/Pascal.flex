@@ -155,10 +155,11 @@ MOD             = "mod"
     /* cadena literal */
     //\"                        { yybegin(STRING); sb.setLength(0); }
     //{CaracterLiteral}         { return symbol("CHAR_LITERAL",sym.CHAR_LITERAL, yytext().charAt(1)); }
-    {CadenaLiteral}             {   if (yytext().length() == 1)
-                                        return symbol("CHAR_LITERAL",sym.STRING_LITERAL, yytext());
+    {CadenaLiteral}             {   String cadena = yytext().substring(1, yytext().length() - 1);
+                                    if (cadena.length() == 1)
+                                        return symbol("CHAR_LITERAL",sym.STRING_LITERAL, cadena);
                                     else
-                                        return symbol("STRING_LITERAL",sym.STRING_LITERAL, yytext());
+                                        return symbol("STRING_LITERAL",sym.STRING_LITERAL, cadena);
                                 }
     {IntegerLiteral}            { return symbol("INTEGER_LITERAL",sym.INTEGER_LITERAL, new Integer(yytext())); }
     {Comentario}                { }

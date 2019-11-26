@@ -5,28 +5,40 @@
  */
 package ast;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import type.BaseType;
+import visitors.CGVisitor;
+import visitors.SymbolTableVisitor;
+import visitors.TypeVisitor;
 import visitors.Visitor;
 
 /**
  *
  * @author mijail
  */
-public class BooleanType extends Type { 
-    
-    private BooleanType() {
-        this(0, 0);
-    }
-    
-    public BooleanType(int left, int right) { 
+public class BooleanType extends Type {
+
+    public BooleanType(int left, int right) {
         super(left, right);
         type = BaseType.BOOLEAN;
-        super.type = type;
-    } 
-    
+    }
+
+    @Override
+    public void accept(SymbolTableVisitor v) {
+        v.visit(this);
+    }
+
     @Override
     public void accept(Visitor v) {
+        v.visit(this);
+    }
+
+    @Override
+    public void accept(TypeVisitor v) {
+        v.visit(this);
+    }
+
+    @Override
+    public void accept(CGVisitor v) {
         v.visit(this);
     }
 }

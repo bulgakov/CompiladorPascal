@@ -10,18 +10,19 @@ package table;
  * @author mijail
  */
 public class TAddressCode {
+
     String Instr;
     String Rdest;
     String Rscr;
     String Rscr2;
-    
+
     public TAddressCode(String i, String d, String s1, String s2) {
         this.Instr = i;
         this.Rdest = d;
         this.Rscr = s1;
         this.Rscr2 = s2;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder strb = new StringBuilder();

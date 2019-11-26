@@ -54,30 +54,31 @@ public class PascalCompilador {
             
             if(root.value != null) {
                 Program program = (Program)root.value;
-                
                 programToXML(program);
                 
-                if (parser.error()) {
-                    for (ErrorMsg e : parser.getErrors())
-                        System.err.println(e.toString());
-                    System.exit(1);
-                }
-                
-//                ConstructTableSymbol construct = new ConstructTableSymbol(program);
-//                SymbolTable global = construct.Construct();
-//
-//                TypeCheckVisitor typeCheck = new TypeCheckVisitor(global);
-//                program.accept(typeCheck);
-//
-//                if (parser.error() || construct.error() || typeCheck.error()) {
+//                if (parser.error()) {
 //                    for (ErrorMsg e : parser.getErrors())
-//                        System.err.println(e.toString());
-//                    for (ErrorMsg e : construct.getErrors())
-//                        System.err.println(e.toString());
-//                    for (ErrorMsg e : typeCheck.getErrors())
 //                        System.err.println(e.toString());
 //                    System.exit(1);
 //                }
+                
+                ConstructTableSymbol construct = new ConstructTableSymbol(program);
+                SymbolTable global = construct.Construct();
+
+                tableToXML(global);
+                
+                TypeCheckVisitor typeCheck = new TypeCheckVisitor(global);
+                program.accept(typeCheck);
+
+                if (parser.error() || construct.error() || typeCheck.error()) {
+                    for (ErrorMsg e : parser.getErrors())
+                        System.err.println(e.toString());
+                    for (ErrorMsg e : construct.getErrors())
+                        System.err.println(e.toString());
+                    for (ErrorMsg e : typeCheck.getErrors())
+                        System.err.println(e.toString());
+                    System.exit(1);
+                }
 //                
 //                ICGVisitor cgVisitor = new ICGVisitor(global);
 //                cgVisitor.visit(program); // Unfinished
@@ -114,13 +115,14 @@ public class PascalCompilador {
         }
     }
     
-    private static void programToXML(ast.Program ast) {
+    private static void programToXML(Program ast) {
         try {
             File file = new File("Program.xml");
             XStream xstream = new XStream(new DomDriver());
             xstream.useAttributeFor(ast.ASTNode.class, "line");
             xstream.useAttributeFor(ast.ASTNode.class, "column");
             xstream.useAttributeFor(ast.ASTNode.class, "depth");
+            xstream.useAttributeFor(ast.ProcedureDeclaration.class, "procedure");
             xstream.useAttributeFor(type.Type.class, "size");
             xstream.useAttributeFor(type.Type.class, "name");
             xstream.omitField(ast.ASTNode.class, "type");
@@ -128,6 +130,33 @@ public class PascalCompilador {
             
             try (FileWriter fileWriter = new FileWriter(file)) {
                 xstream.toXML(ast, fileWriter);
+                fileWriter.flush();
+            }
+        } catch (Exception e) {
+            System.err.println("error: " + e.toString());
+            e.printStackTrace(System.err);
+        }
+    }
+    
+    private static void tableToXML(SymbolTable table) {
+        try {
+            File file = new File("Table.xml");
+            XStream xstream = new XStream(new DomDriver());
+            xstream.useAttributeFor(table.SymbolTable.class, "name");
+            xstream.useAttributeFor(table.SymbolTable.class, "depth");
+            xstream.useAttributeFor(table.SymbolTable.class, "updated");
+            xstream.useAttributeFor(table.SymbolInfo.class, "id");
+            xstream.useAttributeFor(table.SymbolInfo.class, "belonging");
+            xstream.useAttributeFor(table.SymbolInfo.class, "type");
+            xstream.useAttributeFor(table.SymbolInfo.class, "offset");
+            xstream.useAttributeFor(table.SymbolType.class, "id");
+            xstream.useAttributeFor(table.SymbolType.class, "belonging");
+            xstream.useAttributeFor(table.SymbolType.class, "type");
+            xstream.useAttributeFor(table.SymbolType.class, "offset");
+            xstream.omitField(table.SymbolTable.class, "parent");
+            
+            try (FileWriter fileWriter = new FileWriter(file)) {
+                xstream.toXML(table, fileWriter);
                 fileWriter.flush();
             }
         } catch (Exception e) {

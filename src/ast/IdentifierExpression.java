@@ -20,16 +20,16 @@ public class IdentifierExpression extends Expression {
 
     public IdentifierExpression(Identifier i, int left, int right) {
         super(left, right);
-        id=i;
-        field=null;
+        id = i;
+        field = null;
     }
-    
+
     public IdentifierExpression(Identifier i, Identifier f, int left, int right) {
         super(left, right);
-        id=i;
-        field=f;
+        id = i;
+        field = f;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

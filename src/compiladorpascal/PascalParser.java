@@ -477,7 +477,8 @@ public class PascalParser extends java_cup.runtime.lr_parser {
 
  
     private List<ErrorMsg> errors = new ArrayList<ErrorMsg>();
-
+    
+    @Override
     public void report_error(String message, Object info) {       
         /* Alt error print */
         /*
@@ -515,8 +516,15 @@ public class PascalParser extends java_cup.runtime.lr_parser {
             errors.add(new ErrorMsg(0, 0, err.toString()));
     }
 
+    @Override
     public void syntax_error(Symbol symbol) {
-        report_error("Syntax error", symbol);
+        //report_error("Syntax error", symbol);
+        String error_msg = "Syntax error on ["
+                + ((symbol.sym == sym.error || symbol.sym == sym.IDENTIFIER)
+                        ? symbol.value.toString()
+                        : symbl_name_from_id(symbol.sym))
+                + "]";
+        report_error(error_msg, symbol);
     }
     
     public List<ErrorMsg> getErrors() { 

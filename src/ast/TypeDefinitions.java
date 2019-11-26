@@ -13,6 +13,7 @@ import java.util.List;
  * @author mijai
  */
 public class TypeDefinitions {
+
     public List<TypeDefinition> Types;
 
     public TypeDefinitions() {

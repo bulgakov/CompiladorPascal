@@ -14,112 +14,46 @@ import table.ErrorMsg;
 //import ast.Type;
 import table.SymbolInfo;
 import table.SymbolTable;
+import table.SymbolType;
+import type.BaseType;
+import type.DefinedType;
 import type.Type;
 import type.ProcType;
-
 
 /**
  *
  * @author mijail
  */
-public class BuildGlobalTableVisitor implements GlobalTableVisitor {
-    
+public class BuildGlobalTableVisitor implements SymbolTableVisitor {
+
     private SymbolTable global;
     private List<ErrorMsg> errors;
-    
-    
+
     public BuildGlobalTableVisitor() {
         errors = new ArrayList<>();
     }
-    
-    public SymbolTable getGlobalTable() { 
+
+    public SymbolTable getGlobalTable() {
         return global;
     }
-    
+
     public boolean error() {
         return errors.size() > 0;
     }
-    
+
     public List<ErrorMsg> getErrors() {
         return errors;
     }
-    
-//    @Override
-//    public void visit(Program n) {
-//        global = new SymbolTable(null);
-//        global.name = "global";
-//        n.SubProgramBody.accept(this);
-//    }
-//
-//    @Override
-//    public void visit(SubProgramBody n) {
-//        
-//        String procName = n.SubProgramSpecification.Identifier.id;
-//        Type procType = n.SubProgramSpecification.Identifier.type;
-//
-//        SymbolTable proctable = new SymbolTable(global);
-//        proctable.name = procName;
-//        ((ProcType) procType).thisType = proctable;
-//
-//        try {
-//            global.put(procName, new SymbolInfo(procName, global.name, procType));
-//        } catch (Exception ex) {
-//            errors.add(new ErrorMsg(
-//                    n.SubProgramSpecification.Identifier.getLine(), 
-//                    n.SubProgramSpecification.Identifier.getColumn(), 
-//                    ex.getMessage()));
-//        }
-//        try {
-//            global.put(procName, proctable);
-//        } catch (Exception ex) {
-//            errors.add(new ErrorMsg(
-//                    n.SubProgramSpecification.Identifier.getLine(), 
-//                    n.SubProgramSpecification.Identifier.getColumn(), 
-//                    ex.getMessage()));
-//        }
-//
-//        //set scope to subprogram
-//        global = proctable;
-//
-//        for(ParameterDefinition param : n.SubProgramSpecification.ParameterList.Parameters)
-//            param.accept(this);
-//
-//        for(DeclarativeItem item : n.DeclarativePart.Items)
-//            item.accept(this);
-//
-//        //restore scope to parent
-//        global = proctable.parent;
-//    }
-//    
-//    @Override
-//    public void visit(ParameterDefinition n) {
-//        for(Identifier i : n.ParameterNameList.Identifiers)
-//            try {
-//                global.put(i.id, new SymbolInfo(i.id, global.name, i.type));
-//            } catch (Exception ex) {
-//                errors.add(new ErrorMsg(
-//                    i.getLine(), 
-//                    i.getColumn(), 
-//                    ex.getMessage()));
-//            }
-//    }
-//
-//    @Override
-//    public void visit(ObjectDeclarativeItem n) {
-//        for(Identifier i : n.IdentifierList.Identifiers)
-//            try {
-//                global.put(i.id, new SymbolInfo(i.id, global.name, i.type));
-//            } catch (Exception ex) {
-//                errors.add(new ErrorMsg(
-//                    i.getLine(), 
-//                    i.getColumn(), 
-//                    ex.getMessage()));
-//            }
-//    }
 
     @Override
     public void visit(Program n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (n instanceof ErrorProgram) {
+            return;
+        }
+
+        global = new SymbolTable(null);
+        global.name = n.id;
+        n.Block.accept(this);
     }
 
     @Override
@@ -129,62 +63,139 @@ public class BuildGlobalTableVisitor implements GlobalTableVisitor {
 
     @Override
     public void visit(Block n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public void visit(Declarations n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Get type definitions
+        for (Declaration d : n.Declarations.Declarations) {
+            if (d instanceof TypeDeclaration) {
+                d.accept(this);
+            }
+        }
+
+        // Another round for variables and procedures
+        for (Declaration d : n.Declarations.Declarations) {
+            if (!(d instanceof TypeDeclaration)) {
+                d.accept(this);
+            }
+        }
     }
 
     @Override
     public void visit(TypeDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void visit(TypeDefinitions n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (TypeDefinition t : n.TypeDefinitions.Types) {
+            t.accept(this);
+        }
     }
 
     @Override
     public void visit(TypeDefinition n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public void visit(FieldList n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DefinedType df = new DefinedType(n.id.id);
+        SymbolType type = new SymbolType(n.id.id, global.name, df);
+
+        for (Field f : n.Fields.Fields) {
+
+            f.Type.accept(this);
+            n.type = f.Type.type;
+
+            try {
+                type.put(f.id.id, new SymbolInfo(f.id.id, type.getId(), f.type));
+            } catch (Exception ex) {
+                errors.add(new ErrorMsg(
+                        f.getLine(),
+                        f.getColumn(),
+                        ex.getMessage()));
+            }
+        }
     }
 
     @Override
     public void visit(VariableDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void visit(VariableDefinitions n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (VariableDefinition t : n.VariableDefinitions.Variables) {
+            t.accept(this);
+        }
     }
 
     @Override
     public void visit(VariableDefinition n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        n.Type.accept(this);
+        n.type = n.Type.type;
+
+        try {
+            global.put(n.id.id, new SymbolInfo(n.id.id, global.name, n.type));
+        } catch (Exception ex) {
+            errors.add(new ErrorMsg(
+                    n.getLine(),
+                    n.getColumn(),
+                    ex.getMessage()));
+        }
     }
 
     @Override
     public void visit(ProcedureDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        String procName = n.id.id;
 
-    @Override
-    public void visit(ParameterDefinitions n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<type.Type> params = new ArrayList<>();
+        for (ParameterDefinition param : n.ParameterDefinitions.Parameters) {
+            param.Type.accept(this);
+            param.type = param.Type.type;
+        }
+
+        if (n.ReturnType != null) {
+            n.ReturnType.accept(this);
+        }
+
+        Type procType = new ProcType(n.id.id, n.ReturnType == null ? BaseType.VOID : n.ReturnType.type, params);
+
+        SymbolTable proctable = new SymbolTable(global);
+        proctable.name = procName;
+
+        try {
+            global.put(procName, new SymbolInfo(procName, global.name, procType));
+        } catch (Exception ex) {
+            errors.add(new ErrorMsg(
+                    n.id.getLine(),
+                    n.id.getColumn(),
+                    ex.getMessage()));
+        }
+        try {
+            global.put(procName, proctable);
+        } catch (Exception ex) {
+            errors.add(new ErrorMsg(
+                    n.id.getLine(),
+                    n.id.getColumn(),
+                    ex.getMessage()));
+        }
+
+        //set scope to procedure
+        global = proctable;
+
+        //add each parameter to table
+        for (ParameterDefinition param : n.ParameterDefinitions.Parameters) {
+            param.accept(this);
+        }
+
+        //add block to table
+        n.Block.accept(this);
+
+        //restore scope to parent
+        global = proctable.parent;
     }
 
     @Override
     public void visit(ParameterDefinition n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        // Already done on procedure declaration
+        //n.Type.accept(this);
+        //n.type = n.Type.type;
+        try {
+            global.put(n.id.id, new SymbolInfo(n.id.id, global.name, n.type));
+        } catch (Exception ex) {
+            errors.add(new ErrorMsg(
+                    n.getLine(),
+                    n.getColumn(),
+                    ex.getMessage()));
+        }
     }
 
     @Override
@@ -233,11 +244,6 @@ public class BuildGlobalTableVisitor implements GlobalTableVisitor {
     }
 
     @Override
-    public void visit(Parameters n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void visit(LogicalExpression n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -278,6 +284,11 @@ public class BuildGlobalTableVisitor implements GlobalTableVisitor {
     }
 
     @Override
+    public void visit(CharLiteral n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public void visit(IntegerLiteral n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -294,32 +305,33 @@ public class BuildGlobalTableVisitor implements GlobalTableVisitor {
 
     @Override
     public void visit(IdentifierType n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SymbolType stype = global.getType(n.id);
+        n.type = stype.getType();
     }
 
     @Override
     public void visit(BooleanType n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.type = BaseType.BOOLEAN;
     }
 
     @Override
     public void visit(IntegerType n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.type = BaseType.INTEGER;
     }
 
     @Override
     public void visit(CharType n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        n.type = BaseType.CHAR;
     }
 
     @Override
     public void visit(ErrorProgram n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Nothing here its a syntax error
     }
 
     @Override
     public void visit(ErrorDeclaration n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Nothing here its a syntax error
     }
 
     @Override
@@ -331,6 +343,4 @@ public class BuildGlobalTableVisitor implements GlobalTableVisitor {
     public void visit(ErrorExpression n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    
 }

@@ -927,10 +927,11 @@ public class PascalScanner implements java_cup.runtime.Scanner, sym {
             }
           case 74: break;
           case 21: 
-            { if (yytext().length() == 1)
-                                        return symbol("CHAR_LITERAL",sym.STRING_LITERAL, yytext());
+            { String cadena = yytext().substring(1, yytext().length() - 1);
+                                    if (cadena.length() == 1)
+                                        return symbol("CHAR_LITERAL",sym.STRING_LITERAL, cadena);
                                     else
-                                        return symbol("STRING_LITERAL",sym.STRING_LITERAL, yytext());
+                                        return symbol("STRING_LITERAL",sym.STRING_LITERAL, cadena);
             }
           case 75: break;
           case 22: 

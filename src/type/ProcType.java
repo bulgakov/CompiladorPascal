@@ -5,7 +5,6 @@
  */
 package type;
 
-import table.SymbolTable;
 import java.util.List;
 
 /**
@@ -16,48 +15,54 @@ public class ProcType extends Type {
 
     public Type returnType;
     public List<Type> params;
-    public SymbolTable table;
-    
-    public ProcType(String n, Type r, List<Type> p, SymbolTable t) { 
-        table = t;
+
+    public ProcType(String n, Type r, List<Type> p) {
         name = n;
         returnType = r;
         params = p;
     }
-    
-    public void addParameter(Type t) { 
+
+    public void addParameter(Type t) {
         params.add(t);
     }
-    
+
     @Override
     public boolean same(Type e) {
-        if (!(e instanceof ProcType))
+        if (!(e instanceof ProcType)) {
             return false;
-        
+        }
+
         ProcType p = (ProcType) e;
-        if (params.size() != params.size()) 
+        if (params.size() != params.size()) {
             return false;
-        
-        for (int i = 0; i < params.size(); i++) 
-            if (!params.get(i).same(p.params.get(i)))
+        }
+
+        for (int i = 0; i < params.size(); i++) {
+            if (!params.get(i).same(p.params.get(i))) {
                 return false;
-        
+            }
+        }
+
         return returnType.same(p.returnType);
     }
 
     @Override
     public boolean assignable(Type e) {
-        if (!(e instanceof ProcType))
+        if (!(e instanceof ProcType)) {
             return false;
-        
+        }
+
         ProcType p = (ProcType) e;
-        if (params.size() != params.size()) 
+        if (params.size() != params.size()) {
             return false;
-        
-        for (int i = 0; i < params.size(); i++) 
-            if (!params.get(i).same(p.params.get(i)))
+        }
+
+        for (int i = 0; i < params.size(); i++) {
+            if (!params.get(i).same(p.params.get(i))) {
                 return false;
-        
+            }
+        }
+
         return returnType.assignable(p.returnType);
     }
 
@@ -68,13 +73,14 @@ public class ProcType extends Type {
         strb.append(returnType);
         strb.append(" -> ");
         strb.append("(");
-        for(Type t : params)
+        for (Type t : params) {
             strb.append(t);
-        strb.append(")");        
+        }
+        strb.append(")");
         strb.append(")");
         return strb.toString();
     }
-    
+
     public int paramsCount() {
         return params.size();
     }

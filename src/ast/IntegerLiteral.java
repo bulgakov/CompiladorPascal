@@ -16,12 +16,12 @@ import visitors.Visitor;
 public class IntegerLiteral extends Expression {
 
     public int i;
-    
-    public IntegerLiteral(int i, int left, int right){ 
+
+    public IntegerLiteral(int i, int left, int right) {
         super(left, right);
         this.i = i;
     }
-    
+
     @Override
     public void accept(Visitor v) {
         v.visit(this);

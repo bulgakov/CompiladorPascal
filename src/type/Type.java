@@ -10,21 +10,22 @@ package type;
  * @author mijail
  */
 public abstract class Type {
+
     protected int size;
     protected String name;
-    
-    public int getSize(){
+
+    public int getSize() {
         return size;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    
+
     public abstract boolean same(Type e);
-    
+
     public abstract boolean assignable(Type e);
-    
+
     @Override
     public String toString() {
         return name;
