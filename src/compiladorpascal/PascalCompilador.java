@@ -77,13 +77,17 @@ public class PascalCompilador {
                         System.err.println(e.toString());
                     for (ErrorMsg e : typeCheck.getErrors())
                         System.err.println(e.toString());
-                    System.exit(1);
+                    //System.exit(1);
                 }
-//                
-//                ICGVisitor cgVisitor = new ICGVisitor(global);
-//                cgVisitor.visit(program); // Unfinished
-//                
-//                cgVisitor.writePseudoCode("PseudoCodigo.txt");
+                
+                ICGVisitor cgVisitor = new ICGVisitor(global);
+                cgVisitor.visit(program);
+                
+                cgVisitor.writePseudoCode("PseudoCodigo.txt");
+                
+                ICGParser icgParser = new ICGParser(global, cgVisitor.getTemps(), cgVisitor.getPseudoCodeList(), cgVisitor.getTexts());
+                icgParser.parse();
+                icgParser.writeCode(codeFile.getName());
             } else {
                 for (ErrorMsg e : parser.getErrors())
                     System.err.println(e.toString());
@@ -122,10 +126,17 @@ public class PascalCompilador {
             xstream.useAttributeFor(ast.ASTNode.class, "line");
             xstream.useAttributeFor(ast.ASTNode.class, "column");
             xstream.useAttributeFor(ast.ASTNode.class, "depth");
+            xstream.useAttributeFor(ast.ASTNode.class, "type");
             xstream.useAttributeFor(ast.ProcedureDeclaration.class, "procedure");
+            xstream.useAttributeFor(ast.ProcedureDeclaration.class, "id");
             xstream.useAttributeFor(type.Type.class, "size");
             xstream.useAttributeFor(type.Type.class, "name");
             xstream.omitField(ast.ASTNode.class, "type");
+            xstream.omitField(ast.ASTNode.class, "Lugar");
+            xstream.omitField(ast.ASTNode.class, "Verdadera");
+            xstream.omitField(ast.ASTNode.class, "Falsa");
+            xstream.omitField(ast.ASTNode.class, "Comienzo");
+            xstream.omitField(ast.ASTNode.class, "Siguiente");
             xstream.omitField(type.ProcType.class, "Table");
             
             try (FileWriter fileWriter = new FileWriter(file)) {
@@ -146,11 +157,13 @@ public class PascalCompilador {
             xstream.useAttributeFor(table.SymbolTable.class, "depth");
             xstream.useAttributeFor(table.SymbolTable.class, "updated");
             xstream.useAttributeFor(table.SymbolInfo.class, "id");
-            xstream.useAttributeFor(table.SymbolInfo.class, "belonging");
+            xstream.useAttributeFor(table.SymbolInfo.class, "owner");
             xstream.useAttributeFor(table.SymbolInfo.class, "type");
             xstream.useAttributeFor(table.SymbolInfo.class, "offset");
+            xstream.useAttributeFor(table.SymbolInfo.class, "global");
+            xstream.useAttributeFor(table.SymbolInfo.class, "param");
             xstream.useAttributeFor(table.SymbolType.class, "id");
-            xstream.useAttributeFor(table.SymbolType.class, "belonging");
+            xstream.useAttributeFor(table.SymbolType.class, "owner");
             xstream.useAttributeFor(table.SymbolType.class, "type");
             xstream.useAttributeFor(table.SymbolType.class, "offset");
             xstream.omitField(table.SymbolTable.class, "parent");

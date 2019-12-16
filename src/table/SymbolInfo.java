@@ -5,6 +5,7 @@
  */
 package table;
 
+import java.util.ArrayList;
 import type.Type;
 
 /**
@@ -13,31 +14,73 @@ import type.Type;
  */
 public class SymbolInfo {
 
-    public String id;
-    public String belonging;
+    private String id;
+    private String owner;
 
-    public Type type;
-    public int offset;
+    private Type type;
+    private int offset;
+    private boolean global;
+    private boolean param;
 
-    public SymbolInfo(String id, String belonging, Type type) {
+    private String descriptor;
+
+    public SymbolInfo(String id, String owner, Type type) {
+        this(id, owner, type, false);
+    }
+
+    public SymbolInfo(String id, String owner, Type type, boolean param) {
         this.id = id;
-        this.belonging = belonging;
+        this.owner = owner;
         this.type = type;
-        this.offset = -1;
+        this.offset = 0;
+        this.param = param;
+        this.descriptor = "";
     }
 
     public String getId() {
         return id;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
     public Type getType() {
         return type;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int v) {
+        offset = v;
+    }
+
+    public void setGlobal(boolean v) {
+        global = v;
+    }
+
+    public boolean isGlobal() {
+        return global;
+    }
+
+    public boolean isParam() {
+        return param;
+    }
+
+    public String getDescriptor() {
+        return descriptor;
+    }
+
+    public void setDescriptor(String d) {
+        descriptor = d;
     }
 
     @Override
     public String toString() {
         return "id= " + id + "|type " + type
-                + "|belonging= " + belonging
+                + "|belonging= " + owner
                 + "|offset= " + offset;
     }
 }

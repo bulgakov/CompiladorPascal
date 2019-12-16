@@ -26,19 +26,35 @@ public class TAddressCode {
     @Override
     public String toString() {
         StringBuilder strb = new StringBuilder();
-        strb.append(this.Instr);
-        if (this.Rdest != null) {
+        strb.append(this.getInstr());
+        if (this.getRdest() != null) {
             strb.append(" ");
-            strb.append(this.Rdest);
+            strb.append(this.getRdest());
         }
-        if (this.Rscr != null) {
+        if (this.getRscr() != null) {
             strb.append(" ");
-            strb.append(this.Rscr);
+            strb.append(this.getRscr());
         }
-        if (this.Rscr2 != null) {
+        if (this.getRscr2() != null) {
             strb.append(" ");
-            strb.append(this.Rscr2);
+            strb.append(this.getRscr2());
         }
         return strb.toString();
+    }
+
+    public String getInstr() {
+        return Instr;
+    }
+
+    public String getRdest() {
+        return Rdest;
+    }
+
+    public String getRscr() {
+        return Rscr;
+    }
+
+    public String getRscr2() {
+        return Rscr2;
     }
 }

@@ -9,10 +9,8 @@ import ast.*;
 import java.util.ArrayList;
 import java.util.List;
 import table.ErrorMsg;
-import table.SymbolInfo;
-import table.SymbolTable;
-import type.BaseType;
-import type.ProcType;
+import table.*;
+import type.*;
 
 /**
  *
@@ -21,12 +19,10 @@ import type.ProcType;
 public class TypeCheckVisitor implements TypeVisitor {
 
     private SymbolTable global;
-    private SymbolTable top;
     private List<ErrorMsg> errors;
 
     public TypeCheckVisitor(SymbolTable global) {
         this.global = global;
-        this.top = global;
         this.errors = new ArrayList<>();
     }
 
@@ -91,7 +87,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 
     @Override
     public void visit(ProcedureDeclaration n) {
-        if (global.get(n.id.id).type.same(BaseType.UNDEFINED)) {
+        if (global.get(n.id.id).getType().same(BaseType.UNDEFINED)) {
             return;
         }
 
@@ -120,6 +116,10 @@ public class TypeCheckVisitor implements TypeVisitor {
 
     @Override
     public void visit(WriteStatement n) {
+        if (n.paramOpt == null) {
+            return;
+        }
+
         n.paramOpt.accept(this);
 
         if (n.paramOpt.type == null) {
@@ -155,16 +155,18 @@ public class TypeCheckVisitor implements TypeVisitor {
             return;
         }
 
-        if (BaseType.STRING.assignable(n.Expression.type)) {
-            n.type = BaseType.STRING;
+        if (!(n.Expression instanceof IdentifierExpression)) {
+            errors.add(new ErrorMsg(
+                    n.Expression.getLine(),
+                    n.Expression.getColumn(),
+                    "Error Expression must be an Identifier on read statement"));
+            n.type = BaseType.UNDEFINED;
+        }
+        
+        if (BaseType.INTEGER.assignable(n.Expression.type)) {
+            n.type = BaseType.INTEGER;
         } else if (BaseType.CHAR.assignable(n.Expression.type)) {
             n.type = BaseType.CHAR;
-        } else if (BaseType.INTEGER.assignable(n.Expression.type)) {
-            n.type = BaseType.INTEGER;
-        } else if (BaseType.FLOAT.assignable(n.Expression.type)) {
-            n.type = BaseType.FLOAT;
-        } else if (BaseType.BOOLEAN.assignable(n.Expression.type)) {
-            n.type = BaseType.BOOLEAN;
         } else {
             errors.add(new ErrorMsg(
                     n.Expression.getLine(),
@@ -200,11 +202,22 @@ public class TypeCheckVisitor implements TypeVisitor {
                     "Error unable to assing " + n.Expression.type.toString() + " to " + n.Identifier.type.toString()));
         }
 
-        if (!n.Identifier.type.assignable(n.Expression.type)) {
-            errors.add(new ErrorMsg(
-                    n.Expression.getLine(),
-                    n.Expression.getColumn(),
-                    "Error unable to assing " + n.Expression.type.toString() + " to " + n.Identifier.type.toString()));
+        // Return proc assignment
+        if (n.Identifier.type instanceof ProcType) {
+            ProcType procType = (ProcType)n.Identifier.type;
+            if (!procType.returnType.assignable(n.Expression.type)) {
+                errors.add(new ErrorMsg(
+                        n.Expression.getLine(),
+                        n.Expression.getColumn(),
+                        "Error unable to assing " + n.Expression.type.toString() + " to " + procType.returnType.toString()));
+            }
+        } else {
+            if (!n.Identifier.type.assignable(n.Expression.type)) {
+                errors.add(new ErrorMsg(
+                        n.Expression.getLine(),
+                        n.Expression.getColumn(),
+                        "Error unable to assing " + n.Expression.type.toString() + " to " + n.Identifier.type.toString()));
+            }
         }
     }
 
@@ -471,6 +484,21 @@ public class TypeCheckVisitor implements TypeVisitor {
         }
 
         n.type = info.getType();
+
+        // Records
+        if (n.type instanceof DefinedType)
+        {
+            DefinedType df = (DefinedType)n.type;
+            SymbolType type = global.getType(df.getName());
+            if (n.field != null) {
+                SymbolInfo fieldType = type.get(n.field.id);
+                n.type = fieldType.getType();
+                if (fieldType.getType().same(BaseType.UNDEFINED)) {
+                    errors.add(new ErrorMsg(n.getLine(), n.getColumn(), "" + n.field.id + " is not declared in " + type.getId()));
+                    n.type = BaseType.UNDEFINED;
+                }
+            }
+        }
     }
 
     @Override

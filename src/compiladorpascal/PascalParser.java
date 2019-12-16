@@ -1794,7 +1794,7 @@ class CUP$PascalParser$actions {
 		Location e2xleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$PascalParser$stack.peek()).xleft;
 		Location e2xright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$PascalParser$stack.peek()).xright;
 		Expression e2 = (Expression)((java_cup.runtime.Symbol) CUP$PascalParser$stack.peek()).value;
-		  RESULT = new AritmeticExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); 
+		  RESULT = new RelationExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); 
               CUP$PascalParser$result = parser.getSymbolFactory().newSymbol("relation",42, ((java_cup.runtime.Symbol)CUP$PascalParser$stack.elementAt(CUP$PascalParser$top-2)), ((java_cup.runtime.Symbol)CUP$PascalParser$stack.peek()), RESULT);
             }
           return CUP$PascalParser$result;
@@ -1956,7 +1956,7 @@ class CUP$PascalParser$actions {
 		Location sxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$PascalParser$stack.peek()).xleft;
 		Location sxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$PascalParser$stack.peek()).xright;
 		String s = (String)((java_cup.runtime.Symbol) CUP$PascalParser$stack.peek()).value;
-		  RESULT = new StringLiteral(s, sxleft.getLine(), sxleft.getColumn()); 
+		  RESULT = new CharLiteral(s, sxleft.getLine(), sxleft.getColumn()); 
               CUP$PascalParser$result = parser.getSymbolFactory().newSymbol("primary",46, ((java_cup.runtime.Symbol)CUP$PascalParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$PascalParser$stack.peek()), RESULT);
             }
           return CUP$PascalParser$result;

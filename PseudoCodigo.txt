@@ -1,0 +1,36 @@
+LABEL factorial
+GOTO factorial_b
+LABEL fact
+GOTO fact_b
+LABEL fact_b
+ASSIGN fact 1
+ASSIGN answer 1
+IFGT ETIQ1 n 1
+GOTO ETIQ0
+LABEL ETIQ1
+ASSIGN i 2
+LABEL ETIQ2
+IFLT ETIQ3 i n
+GOTO ETIQ0
+LABEL ETIQ4
+PLUS i i 1
+GOTO ETIQ2
+LABEL ETIQ3
+MULT t0 answer i
+ASSIGN answer t0
+GOTO ETIQ0
+GOTO ETIQ0
+LABEL ETIQ0
+ASSIGN fact answer
+END fact
+LABEL factorial_b
+WRITE MSG0
+READ number
+PARAM number
+CALL fact 1
+ASSIGN result RET
+WRITE MSG1
+WRITE number
+WRITE MSG2
+WRITE result
+END factorial

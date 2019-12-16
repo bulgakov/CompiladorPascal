@@ -467,7 +467,7 @@ expression                  ::= relation:r
 relation                    ::= simple_expression:e
                             {:  RESULT = e; :}
                             |   relation:e1 OPREL:o simple_expression:e2
-                            {:  RESULT = new AritmeticExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
+                            {:  RESULT = new RelationExpression(o, e1, e2, e1xleft.getLine(), e1xleft.getColumn()); :}
                             ;
 
 simple_expression           ::= OPSUM:o term:t

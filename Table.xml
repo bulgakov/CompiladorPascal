@@ -1,0 +1,70 @@
+<table.SymbolTable name="factorial" depth="0" updated="false">
+  <table class="linked-hash-map">
+    <entry>
+      <string>number</string>
+      <table.SymbolInfo id="number" owner="factorial" offset="4" global="true" param="false">
+        <type class="type.BaseType">
+          <size>4</size>
+          <name>integer</name>
+        </type>
+        <descriptor></descriptor>
+      </table.SymbolInfo>
+    </entry>
+    <entry>
+      <string>result</string>
+      <table.SymbolInfo id="result" owner="factorial" offset="8" global="true" param="false">
+        <type class="type.BaseType" reference="../../../entry/table.SymbolInfo/type"/>
+        <descriptor></descriptor>
+      </table.SymbolInfo>
+    </entry>
+    <entry>
+      <string>fact</string>
+      <table.SymbolInfo id="fact" owner="factorial" offset="8" global="true" param="false">
+        <type class="type.ProcType">
+          <size>0</size>
+          <name>fact</name>
+          <returnType class="type.BaseType" reference="../../../../entry/table.SymbolInfo/type"/>
+          <params>
+            <type.BaseType reference="../../../../../entry/table.SymbolInfo/type"/>
+          </params>
+        </type>
+        <descriptor></descriptor>
+      </table.SymbolInfo>
+    </entry>
+  </table>
+  <types class="linked-hash-map"/>
+  <scopes class="linked-hash-map">
+    <entry>
+      <string>fact</string>
+      <table.SymbolTable name="fact" depth="1" updated="false">
+        <table class="linked-hash-map">
+          <entry>
+            <string>n</string>
+            <table.SymbolInfo id="n" owner="fact" offset="0" global="false" param="true">
+              <type class="type.BaseType" reference="../../../../../../../table/entry/table.SymbolInfo/type"/>
+              <descriptor></descriptor>
+            </table.SymbolInfo>
+          </entry>
+          <entry>
+            <string>i</string>
+            <table.SymbolInfo id="i" owner="fact" offset="4" global="false" param="false">
+              <type class="type.BaseType" reference="../../../../../../../table/entry/table.SymbolInfo/type"/>
+              <descriptor></descriptor>
+            </table.SymbolInfo>
+          </entry>
+          <entry>
+            <string>answer</string>
+            <table.SymbolInfo id="answer" owner="fact" offset="8" global="false" param="false">
+              <type class="type.BaseType" reference="../../../../../../../table/entry/table.SymbolInfo/type"/>
+              <descriptor></descriptor>
+            </table.SymbolInfo>
+          </entry>
+        </table>
+        <types class="linked-hash-map"/>
+        <scopes class="linked-hash-map"/>
+        <offset>8</offset>
+      </table.SymbolTable>
+    </entry>
+  </scopes>
+  <offset>8</offset>
+</table.SymbolTable>

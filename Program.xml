@@ -1,0 +1,200 @@
+<ast.Program line="1" column="1" depth="0">
+  <id>factorial</id>
+  <Block line="3" column="1" depth="0">
+    <Declarations>
+      <Declarations>
+        <ast.VariableDeclaration line="3" column="1" depth="0">
+          <VariableDefinitions>
+            <Variables>
+              <ast.VariableDefinition line="4" column="3" depth="0">
+                <id line="4" column="3" depth="0">
+                  <id>number</id>
+                </id>
+                <Type class="ast.IntegerType" line="4" column="19" depth="0"/>
+              </ast.VariableDefinition>
+              <ast.VariableDefinition line="4" column="11" depth="0">
+                <id line="4" column="11" depth="0">
+                  <id>result</id>
+                </id>
+                <Type class="ast.IntegerType" reference="../../ast.VariableDefinition/Type"/>
+              </ast.VariableDefinition>
+            </Variables>
+          </VariableDefinitions>
+        </ast.VariableDeclaration>
+        <ast.ProcedureDeclaration line="8" column="1" depth="0" procedure="FUNCTION">
+          <id line="8" column="10" depth="0">
+            <id>fact</id>
+          </id>
+          <ParameterDefinitions>
+            <Parameters>
+              <ast.ParameterDefinition line="8" column="15" depth="0">
+                <id line="8" column="15" depth="0">
+                  <id>n</id>
+                </id>
+                <Type class="ast.IntegerType" line="8" column="18" depth="0"/>
+              </ast.ParameterDefinition>
+            </Parameters>
+          </ParameterDefinitions>
+          <ReturnType class="ast.IntegerType" line="8" column="28" depth="0"/>
+          <Block line="9" column="1" depth="0">
+            <Declarations>
+              <Declarations>
+                <ast.VariableDeclaration line="9" column="1" depth="0">
+                  <VariableDefinitions>
+                    <Variables>
+                      <ast.VariableDefinition line="10" column="5" depth="0">
+                        <id line="10" column="5" depth="0">
+                          <id>i</id>
+                        </id>
+                        <Type class="ast.IntegerType" line="10" column="16" depth="0"/>
+                      </ast.VariableDefinition>
+                      <ast.VariableDefinition line="10" column="8" depth="0">
+                        <id line="10" column="8" depth="0">
+                          <id>answer</id>
+                        </id>
+                        <Type class="ast.IntegerType" reference="../../ast.VariableDefinition/Type"/>
+                      </ast.VariableDefinition>
+                    </Variables>
+                  </VariableDefinitions>
+                </ast.VariableDeclaration>
+              </Declarations>
+            </Declarations>
+            <Statements line="18" column="21" depth="0">
+              <Statements>
+                <ast.AssignStatement line="13" column="4" depth="0">
+                  <Identifier class="ast.IdentifierExpression" line="13" column="4" depth="0">
+                    <id line="13" column="4" depth="0">
+                      <id>fact</id>
+                    </id>
+                  </Identifier>
+                  <Expression class="ast.IntegerLiteral" line="13" column="12" depth="0">
+                    <i>1</i>
+                  </Expression>
+                </ast.AssignStatement>
+                <ast.AssignStatement line="14" column="4" depth="0">
+                  <Identifier class="ast.IdentifierExpression" line="14" column="4" depth="0">
+                    <id line="14" column="4" depth="0">
+                      <id>answer</id>
+                    </id>
+                  </Identifier>
+                  <Expression class="ast.IntegerLiteral" line="14" column="14" depth="0">
+                    <i>1</i>
+                  </Expression>
+                </ast.AssignStatement>
+                <ast.IfStatement line="15" column="4" depth="0">
+                  <Expression class="ast.RelationExpression" line="15" column="7" depth="0">
+                    <Operator>GT</Operator>
+                    <Exp1 class="ast.IdentifierExpression" line="15" column="7" depth="0">
+                      <id line="15" column="7" depth="0">
+                        <id>n</id>
+                      </id>
+                    </Exp1>
+                    <Exp2 class="ast.IntegerLiteral" line="15" column="11" depth="0">
+                      <i>1</i>
+                    </Exp2>
+                  </Expression>
+                  <Statement class="ast.ForStatement" line="16" column="7" depth="0">
+                    <id line="16" column="11" depth="0">
+                      <id>i</id>
+                    </id>
+                    <Exp1 class="ast.IntegerLiteral" line="16" column="16" depth="0">
+                      <i>2</i>
+                    </Exp1>
+                    <Exp2 class="ast.IdentifierExpression" line="16" column="21" depth="0">
+                      <id line="16" column="21" depth="0">
+                        <id>n</id>
+                      </id>
+                    </Exp2>
+                    <Statement class="ast.AssignStatement" line="17" column="11" depth="0">
+                      <Identifier class="ast.IdentifierExpression" line="17" column="11" depth="0">
+                        <id line="17" column="11" depth="0">
+                          <id>answer</id>
+                        </id>
+                      </Identifier>
+                      <Expression class="ast.AritmeticExpression" line="17" column="21" depth="0">
+                        <Operator>MULT</Operator>
+                        <Exp1 class="ast.IdentifierExpression" line="17" column="21" depth="0">
+                          <id line="17" column="21" depth="0">
+                            <id>answer</id>
+                          </id>
+                        </Exp1>
+                        <Exp2 class="ast.IdentifierExpression" line="17" column="30" depth="0">
+                          <id line="17" column="30" depth="0">
+                            <id>i</id>
+                          </id>
+                        </Exp2>
+                      </Expression>
+                    </Statement>
+                  </Statement>
+                </ast.IfStatement>
+                <ast.AssignStatement line="18" column="7" depth="0">
+                  <Identifier class="ast.IdentifierExpression" line="18" column="7" depth="0">
+                    <id line="18" column="7" depth="0">
+                      <id>fact</id>
+                    </id>
+                  </Identifier>
+                  <Expression class="ast.IdentifierExpression" line="18" column="15" depth="0">
+                    <id line="18" column="15" depth="0">
+                      <id>answer</id>
+                    </id>
+                  </Expression>
+                </ast.AssignStatement>
+              </Statements>
+            </Statements>
+          </Block>
+        </ast.ProcedureDeclaration>
+      </Declarations>
+    </Declarations>
+    <Statements line="26" column="25" depth="0">
+      <Statements>
+        <ast.WriteStatement line="22" column="4" depth="0">
+          <param>Type a number:</param>
+        </ast.WriteStatement>
+        <ast.ReadStatement line="23" column="4" depth="0">
+          <Expression class="ast.IdentifierExpression" line="23" column="9" depth="0">
+            <id line="23" column="9" depth="0">
+              <id>number</id>
+            </id>
+          </Expression>
+        </ast.ReadStatement>
+        <ast.AssignStatement line="24" column="4" depth="0">
+          <Identifier class="ast.IdentifierExpression" line="24" column="4" depth="0">
+            <id line="24" column="4" depth="0">
+              <id>result</id>
+            </id>
+          </Identifier>
+          <Expression class="ast.CallExpression" line="24" column="14" depth="0">
+            <id line="24" column="14" depth="0">
+              <id>fact</id>
+            </id>
+            <Parameters>
+              <Parameters>
+                <ast.IdentifierExpression line="24" column="19" depth="0">
+                  <id line="24" column="19" depth="0">
+                    <id>number</id>
+                  </id>
+                </ast.IdentifierExpression>
+              </Parameters>
+            </Parameters>
+          </Expression>
+        </ast.AssignStatement>
+        <ast.WriteStatement line="25" column="4" depth="0">
+          <param>Factorial of </param>
+          <paramOpt class="ast.IdentifierExpression" line="25" column="27" depth="0">
+            <id line="25" column="27" depth="0">
+              <id>number</id>
+            </id>
+          </paramOpt>
+        </ast.WriteStatement>
+        <ast.WriteStatement line="26" column="4" depth="0">
+          <param> is </param>
+          <paramOpt class="ast.IdentifierExpression" line="26" column="18" depth="0">
+            <id line="26" column="18" depth="0">
+              <id>result</id>
+            </id>
+          </paramOpt>
+        </ast.WriteStatement>
+      </Statements>
+    </Statements>
+  </Block>
+</ast.Program>

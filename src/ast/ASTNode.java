@@ -22,6 +22,7 @@ public abstract class ASTNode {
     public String Lugar;
     public String Verdadera;
     public String Falsa;
+    public String Comienzo;
     public String Siguiente;
 
     private ASTNode() {

@@ -5,6 +5,7 @@
  */
 package ast;
 
+import type.DefinedType;
 import visitors.CGVisitor;
 import visitors.SymbolTableVisitor;
 import visitors.TypeVisitor;
@@ -21,6 +22,7 @@ public class IdentifierType extends Type {
     public IdentifierType(String i, int left, int right) {
         super(left, right);
         id = i;
+        type = new DefinedType(i);
     }
 
     @Override

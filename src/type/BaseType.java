@@ -14,8 +14,8 @@ public class BaseType extends Type {
     public static final BaseType INTEGER = new BaseType("integer", 4);
     public static final BaseType BOOLEAN = new BaseType("boolean", 4);
     public static final BaseType FLOAT = new BaseType("float", 4);
-    public static final BaseType CHAR = new BaseType("char", 2);
-    public static final BaseType STRING = new BaseType("string", 2);
+    public static final BaseType CHAR = new BaseType("char", 4);
+    public static final BaseType STRING = new BaseType("string", 4);
     public static final BaseType VOID = new BaseType("void");
     public static final BaseType UNDEFINED = new BaseType("undefined");
 

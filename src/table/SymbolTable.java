@@ -23,21 +23,33 @@ public class SymbolTable {
     public SymbolTable parent;
 
     private int depth;
+    private int offset;
 
     public boolean updated;
 
     public SymbolTable(SymbolTable parent) {
-        table = new HashMap<>();
-        scopes = new HashMap<>();
+        table = new LinkedHashMap<>();
+        types = new LinkedHashMap<>();
+        scopes = new LinkedHashMap<>();
         this.parent = parent;
         updated = false;
-        this.depth = (parent == null) ? 0 : parent.depth + 1;
+        depth = (parent == null) ? 0 : parent.depth + 1;
+        offset = 0;
     }
 
     public void put(String s, SymbolInfo i) throws Exception {
         if (table.get(s) != null) {
             throw new Exception(s + "is already declared.");
         }
+        if (!i.isParam()) {
+            offset += i.getType().getSize();
+            i.setOffset(offset);
+        }
+
+        if (parent == null) {
+            i.setGlobal(true);
+        }
+
         table.put(s, i);
     }
 
@@ -55,6 +67,10 @@ public class SymbolTable {
         scopes.put(s, t);
     }
 
+    public Collection<SymbolInfo> getTable() {
+        return table.values();
+    }
+    
     public SymbolInfo get(String s) {
         for (SymbolTable t = this; t != null; t = t.parent) {
             SymbolInfo i = t.table.get(s);
@@ -87,6 +103,10 @@ public class SymbolTable {
 
     public int getDepth() {
         return depth;
+    }
+    
+    public int getOffset() {
+        return offset;
     }
 
     @Override

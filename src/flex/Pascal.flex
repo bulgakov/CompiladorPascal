@@ -134,22 +134,22 @@ MOD             = "mod"
     "false"                     { return symbol("FALSE",sym.FALSE); }
 
     /* operadores */
-    ":="                        { return symbol("ASSIGN",sym.ASSIGN,yytext()); }
-    "="                         { return symbol("EQ",sym.EQ,yytext()); }
-    "<>"                        { return symbol("NEQ",sym.NEQ,yytext()); }
-    "<"                         { return symbol("LT",sym.LT,yytext()); }
-    ">"                         { return symbol("GT",sym.GT,yytext()); }
-    "<="                        { return symbol("LE",sym.LE,yytext()); }
-    ">="                        { return symbol("GE",sym.GE,yytext()); }
-    "+"                         { return symbol("PLUS",sym.PLUS,yytext()); }
-    "-"                         { return symbol("MINUS",sym.MINUS,yytext()); }
-    "*"                         { return symbol("MULT",sym.MULT,yytext()); }
-    "/"                         { return symbol("SLASH",sym.SLASH,yytext()); }
-    "div"                       { return symbol("DIV",sym.DIV,yytext()); }
-    "mod"                       { return symbol("MOD",sym.MOD,yytext()); }
-    "and"                       { return symbol("AND",sym.AND, yytext()); }
-    "or"                        { return symbol("AND",sym.AND, yytext()); }
-    "not"                       { return symbol("NOT",sym.NOT,yytext()); }
+    ":="                        { return symbol("ASSIGN",sym.ASSIGN,"ASG"); }
+    "="                         { return symbol("EQ",sym.EQ,"EQ"); }
+    "<>"                        { return symbol("NEQ",sym.NEQ,"NEQ"); }
+    "<"                         { return symbol("LT",sym.LT,"LT"); }
+    ">"                         { return symbol("GT",sym.GT,"GT"); }
+    "<="                        { return symbol("LE",sym.LE,"LE"); }
+    ">="                        { return symbol("GE",sym.GE,"GE"); }
+    "+"                         { return symbol("PLUS",sym.PLUS,"PLUS"); }
+    "-"                         { return symbol("MINUS",sym.MINUS,"MINUS"); }
+    "*"                         { return symbol("MULT",sym.MULT,"MULT"); }
+    "/"                         { return symbol("SLASH",sym.SLASH,"SLASH"); }
+    "div"                       { return symbol("DIV",sym.DIV,"DIV"); }
+    "mod"                       { return symbol("MOD",sym.MOD,"MOD"); }
+    "and"                       { return symbol("AND",sym.AND,"AND"); }
+    "or"                        { return symbol("AND",sym.OR,"OR"); }
+    "not"                       { return symbol("NOT",sym.NOT,"NOT"); }
     
     
     /* cadena literal */

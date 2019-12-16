@@ -16,18 +16,18 @@ import type.Type;
 public class SymbolType {
 
     private String id;
-    private String belonging;
+    private String owner;
 
     private Type type;
     private int offset;
 
     private Map<String, SymbolInfo> fields;
 
-    public SymbolType(String id, String belonging, Type type) {
+    public SymbolType(String id, String owner, Type type) {
         this.id = id;
-        this.belonging = belonging;
+        this.owner = owner;
         this.type = type;
-        this.offset = -1;
+        this.offset = 0;
     }
 
     public String getId() {
@@ -36,6 +36,14 @@ public class SymbolType {
 
     public Type getType() {
         return type;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int v) {
+        offset = v;
     }
 
     public void put(String s, SymbolInfo i) throws Exception {
@@ -59,7 +67,7 @@ public class SymbolType {
     @Override
     public String toString() {
         return "id= " + id + "|type " + type
-                + "|belonging= " + belonging
+                + "|belonging= " + owner
                 + "|offset= " + offset;
     }
 }

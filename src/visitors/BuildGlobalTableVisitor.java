@@ -106,6 +106,15 @@ public class BuildGlobalTableVisitor implements SymbolTableVisitor {
                         ex.getMessage()));
             }
         }
+        
+        try {
+            global.put(n.id.id, type);
+        } catch (Exception ex) {
+            errors.add(new ErrorMsg(
+                    n.id.getLine(),
+                    n.id.getColumn(),
+                    ex.getMessage()));
+        }
     }
 
     @Override
@@ -139,6 +148,7 @@ public class BuildGlobalTableVisitor implements SymbolTableVisitor {
         for (ParameterDefinition param : n.ParameterDefinitions.Parameters) {
             param.Type.accept(this);
             param.type = param.Type.type;
+            params.add(param.type);
         }
 
         if (n.ReturnType != null) {
@@ -189,7 +199,7 @@ public class BuildGlobalTableVisitor implements SymbolTableVisitor {
         //n.Type.accept(this);
         //n.type = n.Type.type;
         try {
-            global.put(n.id.id, new SymbolInfo(n.id.id, global.name, n.type));
+            global.put(n.id.id, new SymbolInfo(n.id.id, global.name, n.type, true));
         } catch (Exception ex) {
             errors.add(new ErrorMsg(
                     n.getLine(),

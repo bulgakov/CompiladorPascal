@@ -1,10 +1,7 @@
 program factorial;
  
-const
-  number = 5;
- 
 var
-  result: integer;
+  number, result: integer;
  
 {* demonstrate that a function name is how a function returns its value *}
  
@@ -22,6 +19,8 @@ begin
 end;
  
 begin                {* main program *}
+   write('Type a number:');
+   read(number);
    result := fact(number);
    write('Factorial of ', number);
    write(' is ', result);
