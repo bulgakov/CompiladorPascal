@@ -69,6 +69,10 @@ public class ICGParser {
         if (v.equals("RET")) {
             return null;
         }
+        
+        if (v.startsWith("-")) {
+            return null;
+        }
 
         if (v.matches("^t\\d+$")) {
             return temps.get(v);
@@ -92,15 +96,28 @@ public class ICGParser {
                         return t.getKey();
                     }
                 }
-            } else {
-                // TODO
-            }
-        } else {
-            if (info.isGlobal()) {
+            } else if (v.startsWith("-")){
                 for (Map.Entry<String, String> t : ts.entrySet()) {
                     if (t.getValue() == null) {
                         t.setValue(v);
-                        mipscode.add("    move " + t.getKey() + ",_" + v);
+                        mipscode.add("    lw " + t.getKey() + "," + v);
+                        return t.getKey();
+                    }
+                }
+            }
+        } else {
+            if (v.matches("^t\\d+$")) {
+                for (Map.Entry<String, String> t : ts.entrySet()) {
+                    if (t.getValue() == null) {
+                        t.setValue(v);
+                        return t.getKey();
+                    }
+                }
+            } else if (info.isGlobal()) {
+                for (Map.Entry<String, String> t : ts.entrySet()) {
+                    if (t.getValue() == null) {
+                        t.setValue(v);
+                        mipscode.add("    lw " + t.getKey() + ",_" + v);
                         return t.getKey();
                     }
                 }
@@ -159,13 +176,13 @@ public class ICGParser {
 
         // parse all txts
         for (Map.Entry<String, String> txt : texts.entrySet()) {
-            mipscode.add("    _" + txt.getKey() + " .asciiz \"" + txt.getValue() + "\"");
+            mipscode.add("    _" + txt.getKey() + ": .asciiz \"" + txt.getValue() + "\"");
         }
         // parse words (global vars)
         for (SymbolInfo s : global.getTable()) {
             s.setDescriptor("_" + s.getId());
             if (s.getType().same(BaseType.INTEGER)) {
-                mipscode.add("    _" + s.getId() + "  .word 0");
+                mipscode.add("    _" + s.getId() + ":  .word 0");
             } else if (s.getType().same(BaseType.CHAR)) {
                 //TODO
             }
@@ -175,7 +192,7 @@ public class ICGParser {
         mipscode.add("        .text");
 
         // parse globl
-        mipscode.add("        .globl " + global.name);
+        mipscode.add("        .globl main");
 
         // parse code
         for (TAddressCode c : pseudocode) {
@@ -193,7 +210,11 @@ public class ICGParser {
                     if (info.getType().same(BaseType.INTEGER)) {
                         mipscode.add("    li $v0,5");
                         mipscode.add("    syscall");
-                        mipscode.add("    sw $v0," + regRdest);
+                        if (regRdest.matches("^\\$t\\d+$")) { 
+                            mipscode.add("    move $v0," + regRdest);
+                        } else {
+                            mipscode.add("    sw $v0," + regRdest);
+                        }
                         cleanRegistry(regRdest);
                     } else if (info.getType().same(BaseType.CHAR)) {
                         //TODO
@@ -211,7 +232,7 @@ public class ICGParser {
                         if (info != null) {
                             if (info.getType().same(BaseType.INTEGER)) {
                                 mipscode.add("    li $v0,1");
-                                mipscode.add("    la $a0," + regRdest);
+                                mipscode.add("    move $a0," + regRdest);
                                 mipscode.add("    syscall");
                                 cleanRegistry(regRdest);
                             } else if (info.getType().same(BaseType.CHAR)) {
@@ -219,7 +240,7 @@ public class ICGParser {
                             }
                         } else if (c.getRdest().matches("^\\d+$")) {
                             mipscode.add("    li $v0,1");
-                            mipscode.add("    la $a0," + regRdest);
+                            mipscode.add("    move $a0," + regRdest);
                             mipscode.add("    syscall");
                             cleanRegistry(regRdest);
                         } else {
@@ -233,7 +254,13 @@ public class ICGParser {
                     info = getSymbol(c.getRdest());
                     if (info != null && info.isGlobal()) {
                         regRscr = getRegistry(c.getRscr());
-                        mipscode.add("    sw " + regRscr + ",_" + c.getRdest());
+                        if (regRscr.startsWith("-")) {
+                            String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                            mipscode.add("    sw " + regRscr3 + ",_" + c.getRdest());
+                            cleanRegistry(regRscr3);
+                        } else {
+                            mipscode.add("    sw " + regRscr + ",_" + c.getRdest());
+                        }
                         cleanRegistry(regRscr);
                     } else if (info != null && info.getType() instanceof ProcType) {
                         regRscr = getRegistry(c.getRscr());
@@ -241,7 +268,13 @@ public class ICGParser {
                     } else {
                         regRscr = getRegistry(c.getRscr());
                         regRdest = getAddress(c.getRdest());
-                        mipscode.add("    sw " + regRscr + "," + regRdest);
+                        if (regRscr.startsWith("-")) {
+                            String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                            mipscode.add("    sw " + regRscr3 + "," + regRdest);
+                            cleanRegistry(regRscr3);
+                        } else {
+                            mipscode.add("    sw " + regRscr + "," + regRdest);
+                        }
                         cleanRegistry(regRscr);
                     }
 
@@ -252,7 +285,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    add " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    add " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    add " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -261,7 +305,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    sub " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    sub " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    sub " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -270,7 +325,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    mul " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    mul " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    mul " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -279,7 +345,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    div " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    div " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    div " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -288,7 +365,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    div " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    div " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    div " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -297,7 +385,18 @@ public class ICGParser {
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
                     regRdest = getRegistry(c.getRdest());
-                    mipscode.add("    rem " + regRdest + "," + regRscr + "," + regRscr2);
+                    if (regRdest.startsWith("-") || regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRdest2 = regRdest.startsWith("-") ? getRegistry(regRdest) : regRdest;
+                        String regRscr3 =  regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 =  regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    rem " + regRdest2 + "," + regRscr3 + "," + regRscr4);
+                        if (regRdest.startsWith("-")) mipscode.add("    sw " + regRdest2 + "," + regRdest);
+                        cleanRegistry(regRdest2);
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    rem " + regRdest + "," + regRscr + "," + regRscr2);
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -306,12 +405,24 @@ public class ICGParser {
                     info = getSymbol(c.getRdest());
                     if (info != null && info.isGlobal()) {
                         regRscr = getRegistry(c.getRscr());
-                        mipscode.add("    sw " + regRscr + ",_" + c.getRdest());
+                        if (regRscr.startsWith("-")) {
+                            String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                            mipscode.add("    sw " + regRscr3 + ",_" + c.getRdest());
+                            cleanRegistry(regRscr3);
+                        } else {
+                            mipscode.add("    sw " + regRscr + ",_" + c.getRdest());
+                        }
                         cleanRegistry(regRscr);
                     } else {
                         regRscr = getRegistry(c.getRscr());
                         regRdest = getAddress(c.getRdest());
-                        mipscode.add("    sw " + regRscr + "," + regRdest);
+                        if (regRscr.startsWith("-")) {
+                            String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                            mipscode.add("    sw " + regRscr3 + "," + regRdest);
+                            cleanRegistry(regRscr3);
+                        } else {
+                            mipscode.add("    sw " + regRscr + "," + regRdest);
+                        }
                         cleanRegistry(regRscr);
                     }
 
@@ -328,7 +439,15 @@ public class ICGParser {
                 case "IFEQ":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    beq " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    beq " + regRscr3 + "," + regRscr4 + ",_" + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    beq " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -336,7 +455,15 @@ public class ICGParser {
                 case "IFNEQ":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    bne " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    bne " + regRscr3 + "," + regRscr4 + ",_" + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    bne " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -344,7 +471,15 @@ public class ICGParser {
                 case "IFLT":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    blt " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    blt " + regRscr3 + "," + regRscr4 + ",_" + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    blt " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -352,7 +487,15 @@ public class ICGParser {
                 case "IFGT":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    bgt " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    bgt " + regRscr3 + "," + regRscr4 + ",_" + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    bgt " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -360,7 +503,15 @@ public class ICGParser {
                 case "IFLE":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    ble " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    ble " + regRscr3 + "," + regRscr4 + "," + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    ble " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -368,7 +519,15 @@ public class ICGParser {
                 case "IFGE":
                     regRscr = getRegistry(c.getRscr());
                     regRscr2 = getRegistry(c.getRscr2());
-                    mipscode.add("    bge " + regRscr + "," + regRscr2 + "," + c.getRdest());
+                    if (regRscr.startsWith("-") || regRscr2.startsWith("-")) {
+                        String regRscr3 = regRscr.startsWith("-") ? getRegistry(regRscr) : regRscr;
+                        String regRscr4 = regRscr2.startsWith("-") ? getRegistry(regRscr2) : regRscr2;
+                        mipscode.add("    bge " + regRscr3 + "," + regRscr4 + ",_" + c.getRdest());
+                        cleanRegistry(regRscr3);
+                        cleanRegistry(regRscr4);
+                    } else {
+                        mipscode.add("    bge " + regRscr + "," + regRscr2 + ",_" + c.getRdest());
+                    }
                     cleanRegistry(regRscr);
                     cleanRegistry(regRscr2);
 
@@ -386,11 +545,11 @@ public class ICGParser {
                 // etiquetas
                 case "LABEL":
                     if (c.getRdest().equals(global.name)) {
-                        mipscode.add(c.getRdest() + ":");
+                        mipscode.add("main:");
                         mipscode.add("    move $fp,$sp");
 
                     } else if (c.getRdest().matches("^ETIQ\\d+$")) {
-                        mipscode.add(c.getRdest() + ":");
+                        mipscode.add("_" + c.getRdest() + ":");
                     } else {
                         mipscode.add("_" + c.getRdest() + ":");
                         if (!c.getRdest().endsWith("_b")) {

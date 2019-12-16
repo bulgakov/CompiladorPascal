@@ -1,12 +1,12 @@
         .data
-    _MSG0 .asciiz "Type a number:"
-    _MSG1 .asciiz "Factorial of "
-    _MSG2 .asciiz " is "
-    _number  .word 0
-    _result  .word 0
+    _MSG0: .asciiz "Type a number:"
+    _MSG1: .asciiz "Factorial of "
+    _MSG2: .asciiz " is "
+    _number:  .word 0
+    _result:  .word 0
         .text
-        .globl factorial
-factorial:
+        .globl main
+main:
     move $fp,$sp
     b _factorial_b
 _fact:
@@ -23,27 +23,32 @@ _fact_b:
     li $t0,1
     sw $t0,-20($sp)
     li $t0,1
-    bgt $s0,$t0,ETIQ1
+    bgt $s0,$t0,_ETIQ1
     b _ETIQ0
-ETIQ1:
+_ETIQ1:
     li $t0,2
     sw $t0,-16($sp)
-ETIQ2:
-    blt -16($sp),$s0,ETIQ3
+_ETIQ2:
+    lw $t0,-16($sp)
+    blt $t0,$s0,_ETIQ3
     b _ETIQ0
-ETIQ4:
+_ETIQ4:
     li $t0,1
-    add -16($sp),-16($sp),$t0
+    lw $t1,-16($sp)
+    lw $t2,-16($sp)
+    add $t1,$t2,$t0
+    sw $t1,-16($sp)
     b _ETIQ2
-ETIQ3:
-    move $t0,_t0
-    mul $t0,-20($sp),-16($sp)
-    move $t1,_t0
-    sw $t1,-20($sp)
+_ETIQ3:
+    lw $t1,-20($sp)
+    lw $t2,-16($sp)
+    mul $t0,$t1,$t2
+    sw $t0,-20($sp)
     b _ETIQ0
     b _ETIQ0
-ETIQ0:
-    sw -20($sp),_fact
+_ETIQ0:
+    lw $t0,-20($sp)
+    sw $t0,_fact
     move $sp,$fp
     sw $ra,-8($sp)
     sw $fp,-4($sp)
@@ -52,26 +57,26 @@ _factorial_b:
     li $v0,4
     la $a0,_MSG0
     syscall
-    move $t1,_number
+    lw $t0,_number
     li $v0,5
     syscall
-    sw $v0,$t1
+    move $v0,$t0
     lw $a0,_number
     jal _fact
     sw $v0,_result
     li $v0,4
     la $a0,_MSG1
     syscall
-    move $t1,_number
+    lw $t0,_number
     li $v0,1
-    la $a0,$t1
+    move $a0,$t0
     syscall
     li $v0,4
     la $a0,_MSG2
     syscall
-    move $t1,_result
+    lw $t0,_result
     li $v0,1
-    la $a0,$t1
+    move $a0,$t0
     syscall
     li $v0,10
     syscall
